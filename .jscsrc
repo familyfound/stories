@@ -1,0 +1,12 @@
+{
+	"preset": "node-style-guide",
+	"validateQuoteMarks": {
+		"mark": "'",
+		"escape": true
+	},
+	"validateIndentation": 2,
+	"requireSemicolons": false,
+	"requireSpacesInsideObjectBrackets": {"allExcept": ["}"]},
+	"requireCapitalizedComments": false,
+	"requireCamelCaseOrUpperCaseIdentifiers": false
+}

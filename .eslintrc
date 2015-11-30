@@ -1,0 +1,33 @@
+---
+parser: babel-eslint
+
+env:
+  node: true
+
+plugins:
+  - react
+
+globals:
+  ReactElement: false
+  child_process$ChildProcess: false
+  window: false
+  document: false
+  location: false
+  localStorage: false
+  fetch: false
+  XMLHttpRequest: false
+  Dexie: false
+
+rules:
+  no-redeclare: 2
+  no-unused-expressions: 2
+  prefer-const: 2
+  no-undef: 2
+
+  # JSX
+  react/jsx-no-undef: 2
+  react/jsx-uses-react: 2
+  react/jsx-uses-vars: 2
+  react/no-unknown-property: 2
+  react/react-in-jsx-scope: 2
+  react/self-closing-comp: 2
