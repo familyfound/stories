@@ -44,19 +44,32 @@ const StoriesView = ({stories, searchText, setSearchText}) => (
   </View>
 )
 
+const LoggedOutStories = () => (
+  <View style={[styles.container, styles.loggedOut]}>
+    {/* login to read stories */}
+  </View>
+)
+
 export default connect({
-  props: ['stories'],
+  props: ['stories', 'loginStatus'],
   render: stateful({
     initial: {
       searchText: '',
     },
-    render: StoriesView,
+    render: ({stories, loginStatus}) =>
+      loginStatus === true ?
+        <StoriesView stories={stories} /> :
+        <LoggedOutStories />,
   })
 })
 
 const styles = {
   container: {
     flex: 1,
+  },
+
+  loggedOut: {
+    backgroundColor: '#ddd',
   },
 
   input: {

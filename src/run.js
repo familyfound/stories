@@ -58,7 +58,7 @@ const main = async () => {
 
   // TODO add `api` and `db` to the arguments, so we don't need global
   // singletons
-  const actions = setupActions(creators, store)
+  const actions = window.actions = setupActions(creators, store)
 
   api.syncer.on('current', ({display, total}) => {
     if (store.state.syncStatus !== false) {

@@ -15,7 +15,7 @@ export default class APIManager {
       'story',
     ])
     this.syncer = new Syncer(this, [], {
-      maxUp: 10,
+      maxUp: 9,
       maxDown: 1,
       maxWorkers: 5,
       maxTotal: 500

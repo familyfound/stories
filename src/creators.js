@@ -15,15 +15,18 @@ export const setLoggedIn = val => ({
 
 export const startSyncing = val => {
   api.startSyncing()
-  return {type: 'startSyncing'}
+  const started = new Date()
+  db.setLastSyncStart(started)
+  return {type: 'startSyncing', args: {started}}
 }
 
 export const stopSyncing = completed => {
   api.stopSyncing()
   if (completed) {
-    db.setLastSync(new Date())
+    completed = new Date()
+    db.setLastSync(completed)
   }
-  return {type: 'stopSyncing'}
+  return {type: 'stopSyncing', args: {completed}}
 }
 
 export const setSyncStatus = status => ({

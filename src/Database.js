@@ -16,7 +16,8 @@ export default class Database {
   getState() {
     return PromiseObj({
       hasStarted: this._db.settings.get('hasStarted').then(val => val ? true : false),
-      tabs: this._db.settings.get('tags').then(val => val || []),
+      lastSync: this._db.settings.get('lastSync').then(val => val ? val.date : null),
+      lastSyncStart: this._db.settings.get('lastSyncStart').then(val => val ? val.date : null),
       stories: this._db.stories.orderBy('dateAdded').toArray()
         .then(val => (val || []).reduce(
           (obj, item) => (obj[item.id] = item, obj),
@@ -39,5 +40,13 @@ export default class Database {
 
   setStoryPeople(id, people) {
     return this._db.stories.update(id, {people})
+  }
+
+  setLastSyncStart(date) {
+    this._db.settings.put({id: 'lastSyncStart', date})
+  }
+
+  setLastSync(date) {
+    this._db.settings.put({id: 'lastSync', date})
   }
 }

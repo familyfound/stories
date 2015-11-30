@@ -51,7 +51,7 @@ const styles = {
   },
 
   textInner: {
-    padding: 20,
+    padding: 30,
     fontSize: 20,
     whiteSpace: 'pre-wrap',
     lineHeight: 1.5,
