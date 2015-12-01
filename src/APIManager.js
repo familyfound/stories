@@ -55,7 +55,7 @@ export default class APIManager {
   }
 
   login() {
-    const redirect = encodeURIComponent('http://localhost:7200/')
+    const redirect = encodeURIComponent(location.protocol + '//' + location.host + '/')
     console.log('want to log in')
     window.location = `${this.base}/cis-web/oauth2/v3/authorization?response_type=code&client_id=${this.clientId}&redirect_uri=${redirect}`
   }
