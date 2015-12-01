@@ -16,8 +16,10 @@ const renderStory = (story, selected) => (
     <StoryLink key={story.id} story={story} />
 )
 
+// TODO maybe an accordian view? idk. This is fine for now.
 const StoriesView = ({selected, stories, searchResults, searchText, ctx: {actions: {setSearchText}}}) => (
   <View style={styles.container}>
+    {/* TODO a "clear" button */}
     <input
       style={styles.input}
       value={searchText}

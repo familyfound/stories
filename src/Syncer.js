@@ -91,6 +91,7 @@ class Searcher extends EventEmitter {
         trail,
         display: relatives.person.display,
         relation: calcRelation(trail, numUp, numDown),
+        href: relatives.person.identifiers['http://gedcomx.org/Persistent'][0],
       }
       for (const story of stories) {
         let text = null
