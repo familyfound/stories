@@ -1,26 +1,22 @@
 
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 import View from '../View'
 import Text from '../Text'
 import {Link} from 'react-router'
 import Colors from '../util/Colors'
 
-import {memOnce2} from '../util/memOnce'
 import probably from '../probably'
 import connect from '../connect'
 import stateful from '../util/stateful'
 
-const sortedFilteredStories = memOnce2((storyMap, searchText) => {
-  if (!storyMap) return []
-  let stories = Object.values(storyMap)
-  if (searchText) {
-    const needle = searchText.toLowerCase()
-    stories = stories.filter(story => story.title.toLowerCase().indexOf(needle) !== -1)
-  }
-  return stories// .sort((a, b) => a.title -  b.title)
-})
+const renderStory = (story, selected) => (
+  story.id == selected ?
+    <JumpIntoView><StoryLink key={story.id} story={story} /></JumpIntoView> :
+    <StoryLink key={story.id} story={story} />
+)
 
-const StoriesView = ({stories, searchText, setSearchText}) => (
+const StoriesView = ({selected, stories, searchResults, searchText, ctx: {actions: {setSearchText}}}) => (
   <View style={styles.container}>
     <input
       style={styles.input}
@@ -29,18 +25,42 @@ const StoriesView = ({stories, searchText, setSearchText}) => (
       onChange={e => setSearchText(e.target.value)}
     />
     <View style={styles.stories}>
-      {sortedFilteredStories(stories, searchText).map(story => (
-        <View key={story.id} style={styles.story}>
-          <Link
-            style={styles.storyLink}
-            activeStyle={styles.activeStoryLink}
-            to={`/read/${story.id}/${story.title.replace(/\s/g, '_')}`}
-          >
-            {story.title}
-          </Link>
+      <View style={styles.activeStories}>
+        {searchResults.map(story => (
+          renderStory(story, selected)
+        ))}
+      </View>
+      <View style={styles.archivedStories}>
+        <View style={styles.archivedTitle}>
+          Archived
         </View>
-      ))}
+        {archivedStories(stories).map(story => (
+          renderStory(story, selected)
+        ))}
+      </View>
     </View>
+  </View>
+)
+
+class JumpIntoView extends React.Component {
+  componentDidMount() {
+    findDOMNode(this).scrollIntoViewIfNeeded()
+  }
+
+  render() {
+    return this.props.children
+  }
+}
+
+const StoryLink = ({story}) => (
+  <View style={styles.story}>
+    <Link
+      style={styles.storyLink}
+      activeStyle={styles.activeStoryLink}
+      to={`/read/${story.id}/${story.title.replace(/\s/g, '_')}`}
+    >
+      {story.title}
+    </Link>
   </View>
 )
 
@@ -51,21 +71,26 @@ const LoggedOutStories = () => (
 )
 
 export default connect({
-  props: ['stories', 'loginStatus'],
-  render: stateful({
-    initial: {
-      searchText: '',
-    },
-    render: ({stories, loginStatus}) =>
-      loginStatus === true ?
-        <StoriesView stories={stories} /> :
-        <LoggedOutStories />,
-  })
+  props: ['stories', 'searchText', 'searchResults', 'loginStatus'],
+  render: props =>
+    props.loginStatus === true ?
+      <StoriesView {...props} /> :
+      <LoggedOutStories />,
 })
+
+const archivedStories = storyMap => (
+  Object.values(storyMap).filter(story => !!story.archived)
+)
 
 const styles = {
   container: {
     flex: 1,
+  },
+
+  archivedTitle: {
+    backgroundColor: '#eee',
+    textAlign: 'center',
+    padding: '5px 20px',
   },
 
   loggedOut: {
@@ -81,6 +106,7 @@ const styles = {
     flex: 1,
     overflow: 'auto',
     alignItems: 'stretch',
+    paddingBottom: 30,
   },
 
   story: {

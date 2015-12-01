@@ -11,17 +11,36 @@ const Tagline = () => <Text style={styles.tagline}>
   <Logo/> is a simple, friendly tool for getting acquainted with the stories of your ancestors.
 </Text>
 
-const Welcome = ({stories, syncStatus, ctx: {actions}}) => (
+const message = (syncStatus, lastSync, lastSyncStart) => {
+  if (syncStatus) {
+    return 'Now synchronizing! You can click the story names on the left to start reading when they appear.'
+  }
+  if (!lastSyncStart) {
+    return 'Click below to synchronize with familysearch and download the stories of your direct ancestors and their siblings back 9 generations.'
+  }
+  if (!lastSync || (lastSync.getTime() < lastSyncStart.getTime())) {
+    return `The last sync was incomplete (started ${lastSyncStart.toLocaleString()}), so you can click "synchronize" below to sync again, or just read the stories that are loaded :)`
+  }
+  return `You can click the story names on the left to start reading them, or click the "synchronize" button to re-sync with familysearch. Last synchronized ${lastSyncStart.toLocaleString()}`
+}
+
+const Welcome = ({stories, syncStatus, lastSync, lastSyncStart, ctx: {actions}}) => (
   <View style={styles.container}>
     <View style={styles.inner}>
     <Tagline/>
     <Text style={styles.message}>
-      Click below to synchronize with familysearch and download the stories of your direct ancestors and their siblings back 9 generations.
+      {message(syncStatus, lastSync, lastSyncStart)}
     </Text>
-    {/** todo take lastSync and syncStatus into account **/}
     {syncStatus ?
-      <View>Syncing...{syncStatus.display && syncStatus.display.name} {syncStatus.total} total searched</View> :
-      <Button style={styles.syncButton} onClick={actions.startSyncing}>Let's go!</Button>}
+      <View style={styles.syncMessage}>
+        <Text>Checking {syncStatus.display && syncStatus.display.name}</Text>
+        <Text>{syncStatus.total || 0} total searched</Text>
+      </View> :
+      <Button style={styles.syncButton} onClick={actions.startSyncing}>
+        {lastSyncStart ?
+          'Synchronize' :
+          'Let\'s go!'}
+      </Button>}
     </View>
   </View>
 )
@@ -42,7 +61,7 @@ const LoggedOutWelcome = ({login, loginStatus}) => (
 )
 
 export default connect({
-  props: ['loginStatus', 'syncStatus', 'lastSync'],
+  props: ['loginStatus', 'syncStatus', 'lastSync', 'lastSyncStart'],
   name: 'Welcome',
   render: props => (
     props.loginStatus === true ?
@@ -59,6 +78,12 @@ const styles = {
     flex: 1,
     padding: '50px 75px',
     alignItems: 'center',
+  },
+
+  syncMessage: {
+    margin: '20px 0',
+    lineHeight: 1.6,
+    textAlign: 'center',
   },
 
   inner: {

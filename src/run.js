@@ -2,6 +2,7 @@
 import React from 'react'
 import {render} from 'react-dom'
 
+import searchResults from './util/searchResults'
 import setupActions from './setupActions'
 import * as creators from './creators'
 import makeRouter from './makeRouter'
@@ -53,7 +54,9 @@ const main = async () => {
   const store = window.store = new Store({
     ...dbState,
     loginStatus: await getInitialLoginStatus(),
+    searchText: '',
     syncStatus: false,
+    searchResults: searchResults(dbState.stories, ''),
   }, reduce)
 
   // TODO add `api` and `db` to the arguments, so we don't need global

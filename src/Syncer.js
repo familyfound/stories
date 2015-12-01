@@ -104,6 +104,7 @@ class Searcher extends EventEmitter {
           ...story,
           text,
           words,
+          archived: null,
           title: story.titles ?
             story.titles[0].value :
             person.display.name,

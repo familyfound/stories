@@ -42,6 +42,10 @@ export default class Database {
     return this._db.stories.update(id, {people})
   }
 
+  setArchived(id, archived) {
+    return this._db.stories.update(id, {archived})
+  }
+
   setLastSyncStart(date) {
     this._db.settings.put({id: 'lastSyncStart', date})
   }

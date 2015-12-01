@@ -6,7 +6,7 @@ import View from '../View'
 
 import StoriesView from './StoriesView'
 
-export default ({storyId, tab, ctx}) => (
+const LeftNav = ({storyId, ctx}) => (
   <View style={styles.container}>
     <View style={styles.topItems}>
       <Link style={styles.link} onlyActiveOnIndex activeStyle={styles.activeLink} to="/">Home</Link>
@@ -16,6 +16,8 @@ export default ({storyId, tab, ctx}) => (
     <StoriesView selected={storyId} ctx={ctx} />
   </View>
 )
+
+export default LeftNav
 
 const styles = {
   container: {

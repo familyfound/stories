@@ -34,6 +34,19 @@ export const setSyncStatus = status => ({
   args: {status}
 })
 
+export const setSearchText = searchText => ({
+  type: 'setSearchText',
+  args: {searchText}
+})
+
+export const setArchived = (id, archived) => {
+  db.setArchived(id, archived)
+  return {
+    type: 'setArchived',
+    args: {id, archived},
+  }
+}
+
 export const setStoryPeople = (id, people) => {
   db.setStoryPeople(id, people)
   return {
