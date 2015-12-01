@@ -6,6 +6,6 @@ export default (storyMap, searchText) => {
     const needle = searchText.toLowerCase()
     stories = stories.filter(story => story.title.toLowerCase().indexOf(needle) !== -1)
   }
-  return stories// .sort((a, b) => a.title -  b.title)
+  return stories.sort((a, b) => a.dateAdded.getTime() -  b.dateAdded.getTime())
 }
 

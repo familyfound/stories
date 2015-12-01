@@ -16,6 +16,7 @@ const Read = ({story, setArchived, ctx}) => (
         setArchived={setArchived}
       />
       {story.title}
+      {storyLink(story)}
     </View>
     <View style={styles.body}>
       <View style={styles.text}>
@@ -33,6 +34,12 @@ const Read = ({story, setArchived, ctx}) => (
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
+
+const storyLink = story => (
+  <a style={styles.link} target="_blank" href={`https://familysearch.org/photos/stories/${story.id}`}>
+    View on FamilySearch
+  </a>
+)
 
 const annotateText = memOnce2((text, people) => {
   const searchWords = {}
@@ -112,6 +119,13 @@ const styles = {
     backgroundColor: '#888',
     padding: '5px 10px',
     color: 'white',
+  },
+
+  link: {
+    textAlign: 'center',
+    textDecoration: 'none',
+    marginLeft: 30,
+    fontSize: '80%',
   },
 
   match: {

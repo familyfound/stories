@@ -31,6 +31,14 @@ const StoriesView = ({selected, stories, searchResults, searchText, ctx: {action
         {searchResults.map(story => (
           renderStory(story, selected)
         ))}
+        {!searchResults.length &&
+          (searchText ?
+            <View style={styles.noStories}>
+              No search results
+            </View> :
+            <View style={styles.noStories}>
+              No stories loaded
+            </View>)}
       </View>
       <View style={styles.archivedStories}>
         <View style={styles.archivedTitle}>
@@ -39,6 +47,10 @@ const StoriesView = ({selected, stories, searchResults, searchText, ctx: {action
         {archivedStories(stories).map(story => (
           renderStory(story, selected)
         ))}
+        {!archivedStories(stories).length &&
+          <View style={styles.noStories}>
+            No archived stories
+          </View>}
       </View>
     </View>
   </View>
@@ -102,6 +114,13 @@ const styles = {
   input: {
     fontSize: 20,
     padding: '5px 10px',
+  },
+
+  noStories: {
+    padding: '10px 20px',
+    fontSize: '90%',
+    textAlign: 'center',
+    color: '#777',
   },
 
   stories: {

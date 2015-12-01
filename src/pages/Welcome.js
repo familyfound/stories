@@ -33,8 +33,11 @@ const Welcome = ({stories, syncStatus, lastSync, lastSyncStart, ctx: {actions}})
     </Text>
     {syncStatus ?
       <View style={styles.syncMessage}>
-        <Text>Checking {syncStatus.display && syncStatus.display.name}</Text>
+        <Text>Checking {syncStatus.display && <Text style={styles.statusName}>{syncStatus.display.name}</Text>}</Text>
         <Text>{syncStatus.total || 0} total searched</Text>
+        <Button style={styles.syncButton} onClick={actions.stopSyncing}>
+          Stop synchronizing
+        </Button>
       </View> :
       <Button style={styles.syncButton} onClick={actions.startSyncing}>
         {lastSyncStart ?
@@ -80,9 +83,14 @@ const styles = {
     alignItems: 'center',
   },
 
+  statusName: {
+    fontWeight: 'bold',
+  },
+
   syncMessage: {
     margin: '20px 0',
     lineHeight: 1.6,
+    alignItems: 'center',
     textAlign: 'center',
   },
 

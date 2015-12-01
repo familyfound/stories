@@ -79,10 +79,9 @@ const main = async () => {
         }
       })
       if (people.length > pids.length) {
-        debugger
         actions.setStoryPeople(story.id, people)
       }
-    } else {
+    } else if (story.text) {
       actions.addStory(story)
     }
   })
