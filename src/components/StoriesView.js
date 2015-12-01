@@ -16,6 +16,10 @@ const renderStory = (story, selected) => (
     <StoryLink key={story.id} story={story} />
 )
 
+// TODO fix the jank while syncing & scrolling this view, and the JumpIntoView
+// kicks in just when you don't want it to. Maybe have a "scrolling" state
+// vbl, which resets when the selected changes, or when the story.archived
+// changes... and when scrolling, don't jump
 // TODO maybe an accordian view? idk. This is fine for now.
 const StoriesView = ({selected, stories, searchResults, searchText, ctx: {actions: {setSearchText}}}) => (
   <View style={styles.container}>
@@ -73,6 +77,7 @@ const StoryLink = ({story}) => (
       activeStyle={styles.activeStoryLink}
       to={`/read/${story.id}/${story.title.replace(/\s/g, '_')}`}
     >
+      {story.starred && <Text style={styles.star}>★</Text>}
       {story.title}
     </Link>
   </View>
@@ -139,6 +144,10 @@ const styles = {
     textDecoration: 'none',
     color: '#666',
     backgroundColor: 'white',
+  },
+
+  star: {
+    marginRight: 5,
   },
 
   activeStoryLink: {

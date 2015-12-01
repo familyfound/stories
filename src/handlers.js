@@ -58,6 +58,10 @@ export const setArchived = (state, {id, archived}) => {
   return setOnStory(state, id, 'archived', archived)
 }
 
+export const setStarred = (state, {id, starred}) => (
+  setOnStory(state, id, 'starred', starred)
+)
+
 export const setOnStory = (state, id, attr, value) => ({
   ...state,
   stories: {

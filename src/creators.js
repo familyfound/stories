@@ -47,6 +47,14 @@ export const setArchived = (id, archived) => {
   }
 }
 
+export const setStarred = (id, starred) => {
+  db.setStarred(id, starred)
+  return {
+    type: 'setStarred',
+    args: {id, starred}
+  }
+}
+
 export const setStoryPeople = (id, people) => {
   db.setStoryPeople(id, people)
   return {

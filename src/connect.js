@@ -1,7 +1,7 @@
 
 import React from 'react'
 
-export default ({props: propNames, render: Component, name}) => {
+export default ({props: propNames, setTitle, render: Component, name}) => {
   class Wrapper extends React.Component {
     constructor(props) {
       super(props)
@@ -11,6 +11,15 @@ export default ({props: propNames, render: Component, name}) => {
 
     componentDidMount() {
       this.props.ctx.store.on(this.update)
+      if (setTitle) {
+        document.title = setTitle({...this.props, ...this.state})
+      }
+    }
+
+    componentDidUpdate() {
+      if (setTitle) {
+        document.title = setTitle({...this.props, ...this.state})
+      }
     }
 
     componentWillUnmount() {

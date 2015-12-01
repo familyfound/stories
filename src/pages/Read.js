@@ -8,14 +8,20 @@ import {memOnce2} from '../util/memOnce'
 
 import PeopleInfo from '../components/PeopleInfo'
 
-const Read = ({story, setArchived, ctx}) => (
+const Read = ({story, setArchived, setStarred, ctx}) => (
   <View key={story.id} style={styles.container}>
     <View style={styles.title}>
+      <StarButton
+        starred={story.starred}
+        setStarred={setStarred}
+      />
       <ArchiveButton
         archived={!!story.archived}
         setArchived={setArchived}
       />
+      <View style={styles.spacer} />
       {story.title}
+      <View style={styles.spacer} />
       {storyLink(story)}
     </View>
     <View style={styles.body}>
@@ -78,14 +84,22 @@ const ArchiveButton = ({setArchived, archived}) => (
   </Button>
 )
 
+const StarButton = ({starred, setStarred}) => (
+  <Button style={styles.starButton} onClick={() => setStarred(!starred)}>
+    {starred ? '★' : '☆'}
+  </Button>
+)
+
 export default connect({
   props: ['stories'],
   name: 'Read',
+  setTitle: ({stories, params: {id: storyId}}) => stories[storyId].title,
   render: ({stories, params: {id: storyId}, ctx}) => (
     stories[storyId] ?
       <Read
         story={stories[storyId]}
         setArchived={archived => ctx.actions.setArchived(storyId, archived)}
+        setStarred={starred => ctx.actions.setStarred(storyId, starred)}
         ctx={ctx}
       /> :
       <MissingRead />
@@ -100,6 +114,10 @@ const MissingRead = () => (
 
 const styles = {
   container: {
+    flex: 1,
+  },
+
+  spacer: {
     flex: 1,
   },
 
@@ -119,6 +137,13 @@ const styles = {
     backgroundColor: '#888',
     padding: '5px 10px',
     color: 'white',
+  },
+
+  starButton: {
+    border: 'none',
+    marginRight: 10,
+    fontSize: 20,
+    padding: 0,
   },
 
   link: {

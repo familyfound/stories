@@ -106,6 +106,7 @@ class Searcher extends EventEmitter {
           text,
           words,
           archived: null,
+          starred: false,
           title: story.titles ?
             story.titles[0].value :
             person.display.name,
