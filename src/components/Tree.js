@@ -11,13 +11,14 @@ import {Link} from 'react-router'
 const HEIGHT = 400
 const WIDTH = 700
 
-const TreeDisplay = ({people, mainPerson, organizedStories, selected, onClick}) => (
+const TreeDisplay = ({people, mainPerson, organizedStories, selected, hovered, onClick, onHover}) => (
   <View style={styles.treeDisplay}>
     <TreeNode
       gen={0}
       num={0}
+      key={mainPerson}
       id={mainPerson}
-      {...{people, organizedStories, selected, onClick}}
+      {...{people, organizedStories, selected, hovered, onClick, onHover}}
     />
   </View>
 )
@@ -37,47 +38,45 @@ function getPosStyle(gen, num) {
 function getStoriesStyle(stories) {
   if (!stories || !stories.length) return
   if (stories.length < 3) {
-    return {backgroundColor: 'green'}
+    return {backgroundColor: '#7188FF'}
   }
-  return {backgroundColor: 'red'}
+  return {backgroundColor: '#423DFF'}
 }
 
-const TreeNode = ({gen, num, id, selected, onClick, people, organizedStories}) => (
+const TreeNode = ({gen, num, id, selected, hovered, onHover, onClick, people, organizedStories}) => (
   <View style={[styles.node]}>
     {gen < 7 && people[id] &&
      !!people[id].parents.length &&
-     people[id].parents[0].mother &&
+     people[people[id].parents[0].mother] &&
       <TreeNode
         gen={gen + 1}
         num={num * 2}
-        people={people}
-        onClick={onClick}
-        selected={selected}
-        id={people[id].parents[0].mother}
-        organizedStories={organizedStories}
+        key={people[id].parents[0].father}
+        id={people[id].parents[0].father}
+        {...{organizedStories, people, onClick, onHover, selected, hovered}}
       />}
     {gen < 7 && people[id] &&
      !!people[id].parents.length &&
-     people[id].parents[0].father &&
+     people[people[id].parents[0].father] &&
       <TreeNode
         gen={gen + 1}
         num={num * 2 + 1}
-        people={people}
-        onClick={onClick}
-        selected={selected}
-        id={people[id].parents[0].father}
-        organizedStories={organizedStories}
+        key={people[id].parents[0].mother}
+        id={people[id].parents[0].mother}
+        {...{organizedStories, people, onClick, onHover, selected, hovered}}
       />}
 
     <View
       style={[
         styles.nodeDot,
         getPosStyle(gen, num),
-        people[id] && styles.nodeDotLoaded,
         selected === id && styles.nodeDotSelected,
+        hovered === id && styles.nodeDotHovered,
         getStoriesStyle(organizedStories[id]),
       ]}
-      onClick={people[id] && (() => onClick(id))}
+      onMouseOver={() => onHover(id)}
+      onMouseOut={() => onHover(id)}
+      onClick={() => onClick(id)}
     />
   </View>
 )
@@ -94,13 +93,15 @@ const organizeStories = memOnce(stories => {
   return map
 })
 
-const Tree = ({stories, people, mainPerson, selected, onClick, syncStatus}) => (
+const Tree = ({stories, people, mainPerson, selected, hovered, onClick, onHover, syncStatus}) => (
   <View style={styles.container}>
     <TreeDisplay
       people={people}
       mainPerson={mainPerson}
       selected={selected}
       onClick={onClick}
+      onHover={onHover}
+      hovered={hovered}
       organizedStories={organizeStories(stories)}
     />
     {selected &&
@@ -115,11 +116,23 @@ const Tree = ({stories, people, mainPerson, selected, onClick, syncStatus}) => (
 
 const PersonInfo = ({person, people, mainPerson, organizedStories}) => (
   <View style={styles.personInfo}>
-    <Text style={styles.top}>
-      {person.display.name}
-      {organizedStories[person.pid] ?
-        organizedStories[person.pid].length : 0} Stories
-    </Text>
+    <View style={styles.personTop}>
+      <Text style={styles.name}>
+        {person.display.name} {person.display.lifespan}
+        {!person.display.meta.estimated &&
+          <Text style={styles.personAge}>
+            {person.display.meta.age}
+          </Text>}
+      </Text>
+      {person.display.birthPlan &&
+        <Text style={styles.birthPlace}>
+          {person.display.birthPlace}
+        </Text>}
+      {person.display.deathPlace &&
+        <Text style={styles.deathPlace}>
+          {person.display.deathPlace}
+        </Text>}
+    </View>
     <View style={styles.stories}>
       {organizedStories[person.pid] &&
         organizedStories[person.pid].map(story => (
@@ -136,10 +149,14 @@ export default connect({
   render: stateful({
     initial: {
       selected: null,
+      hovered: null,
     },
     helpers: {
       onClick: (props, state, id) => ({
         selected: state.selected === id ? null : id,
+      }),
+      onHover: (props, state, id) => ({
+        hovered: state.hovered === id ? null : id,
       }),
     },
     render: Tree,
@@ -152,6 +169,13 @@ const styles = {
     width: WIDTH,
     flex: 1,
     overflow: 'auto',
+  },
+
+  personTop: {
+    marginBottom: 10,
+  },
+
+  name: {
   },
 
   treeDisplay: {
@@ -167,11 +191,15 @@ const styles = {
     height: 20,
     borderRadius: 10,
     backgroundColor: '#ddd',
+    cursor: 'pointer',
   },
 
-  nodeDotLoaded: {
-    backgroundColor: '#999',
-    cursor: 'pointer',
+  nodeDotHovered: {
+    border: '4px solid red',
+  },
+
+  nodeDotSelected: {
+    border: '4px solid black',
   },
 
   personInfo: {
