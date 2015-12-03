@@ -6,6 +6,8 @@ export default class Database {
     db.version(1).stores({
       settings: 'id',
       stories: 'id, dateAdded',
+      // TODO add `owner`, to support multi-login
+      people: 'pid, dateAdded',
     })
   }
 
@@ -18,6 +20,11 @@ export default class Database {
       hasStarted: this._db.settings.get('hasStarted').then(val => val ? true : false),
       lastSync: this._db.settings.get('lastSync').then(val => val ? val.date : null),
       lastSyncStart: this._db.settings.get('lastSyncStart').then(val => val ? val.date : null),
+      people: this._db.people.toArray()
+        .then(val => (val || []).reduce(
+          (obj, item) => (obj[item.pid] = item, obj),
+          {}
+        )),
       stories: this._db.stories.orderBy('dateAdded').toArray()
         .then(val => (val || []).reduce(
           (obj, item) => (obj[item.id] = item, obj),
@@ -32,6 +39,10 @@ export default class Database {
 
   addStory(item) {
     return this._db.stories.put(item)
+  }
+
+  addPerson(person) {
+    return this._db.people.put(person)
   }
 
   removeStory(pid) {

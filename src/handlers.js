@@ -23,6 +23,11 @@ export const removeStory = (state, {id}) => {
   return {...state, stories}
 }
 
+export const addPerson = (state, {person}) => ({
+  ...state,
+  people: {...state.people, [person.pid]: person},
+})
+
 export const setStoryPeople = (state, {id, people}) =>
   setOnStory(state, id, 'people', people)
 

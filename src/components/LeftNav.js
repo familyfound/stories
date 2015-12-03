@@ -11,7 +11,6 @@ const LeftNav = ({storyId, ctx}) => (
     <View style={styles.topItems}>
       <Link style={styles.link} onlyActiveOnIndex activeStyle={styles.activeLink} to="/">Home</Link>
       <Link style={styles.link} activeStyle={styles.activeLink} to="/map">Map</Link>
-      <Link style={styles.link} activeStyle={styles.activeLink} to="/tree">Tree</Link>
     </View>
     <StoriesView selected={storyId} ctx={ctx} />
   </View>
@@ -22,6 +21,7 @@ export default LeftNav
 const styles = {
   container: {
     width: 300,
+    borderRight: '1px solid #ccc',
   },
   topItems: {
     flexDirection: 'row',

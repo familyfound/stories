@@ -6,6 +6,7 @@ import Text from '../Text'
 import connect from '../connect'
 
 import Logo from '../components/Logo'
+import Tree from '../components/Tree'
 
 const Tagline = () => <Text style={styles.tagline}>
   <Logo/> is a simple, friendly tool for getting acquainted with the stories of your ancestors.
@@ -24,7 +25,7 @@ const message = (syncStatus, lastSync, lastSyncStart) => {
   return `You can click the story names on the left to start reading them, or click the "synchronize" button to re-sync with familysearch. Last synchronized ${lastSyncStart.toLocaleString()}`
 }
 
-const Welcome = ({stories, syncStatus, lastSync, lastSyncStart, ctx: {actions}}) => (
+const Welcome = ({stories, syncStatus, lastSync, lastSyncStart, ctx}) => (
   <View style={styles.container}>
     <View style={styles.inner}>
     <Tagline/>
@@ -35,16 +36,17 @@ const Welcome = ({stories, syncStatus, lastSync, lastSyncStart, ctx: {actions}})
       <View style={styles.syncMessage}>
         <Text>Checking {syncStatus.display && <Text style={styles.statusName}>{syncStatus.display.name}</Text>}</Text>
         <Text>{syncStatus.total || 0} total searched</Text>
-        <Button style={styles.syncButton} onClick={actions.stopSyncing}>
+        <Button style={styles.syncButton} onClick={ctx.actions.stopSyncing}>
           Stop synchronizing
         </Button>
       </View> :
-      <Button style={styles.syncButton} onClick={actions.startSyncing}>
+      <Button style={styles.syncButton} onClick={ctx.actions.startSyncing}>
         {lastSyncStart ?
           'Synchronize' :
           'Let\'s go!'}
       </Button>}
     </View>
+    <Tree ctx={ctx} />
   </View>
 )
 

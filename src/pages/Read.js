@@ -134,9 +134,9 @@ const styles = {
 
   archiveButton: {
     marginRight: 30,
-    backgroundColor: '#888',
+    border: '1px solid #888',
     padding: '5px 10px',
-    color: 'white',
+    color: '#888',
   },
 
   starButton: {

@@ -49,11 +49,14 @@ window.React = React
 const main = async () => {
   // TODO show loading screen or something. takes half a second to verify
   // login
+  // TODO could I just show a completely different database based on the
+  // logged-in user? hmmmm
   await db.open()
   const dbState = await db.getState()
   const store = window.store = new Store({
     ...dbState,
     loginStatus: await getInitialLoginStatus(),
+    mainPerson: api.user && api.user.personId,
     searchText: '',
     syncStatus: false,
     searchResults: searchResults(dbState.stories, ''),
@@ -84,6 +87,9 @@ const main = async () => {
     } else if (story.text) {
       actions.addStory(story)
     }
+  })
+  api.syncer.on('person', person => {
+    actions.addPerson(person)
   })
   api.syncer.on('stop', completed => actions.stopSyncing(completed))
 

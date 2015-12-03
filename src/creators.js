@@ -68,3 +68,8 @@ export const addStory = story => {
   return {type: 'addStory', args: {story}}
 }
 
+export const addPerson = person => {
+  db.addPerson(person)
+  return {type: 'addPerson', args: {person}}
+}
+

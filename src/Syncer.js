@@ -145,6 +145,20 @@ class Searcher extends EventEmitter {
       })
     }
 
+    // 'people' that we store are only direct ancestors for the moment...
+    if (!numDown) {
+      this.emit('person', {
+        pid: person.id,
+        display: person.display,
+        trail,
+        parents: relatives.parents.map(({mother, father}) => ({mother: mother && mother.id, father: father && father.id})),
+        children: relatives.childIds.map(id => ({
+          pid: id,
+          display: relatives.persons[id].display,
+        }))
+      })
+    }
+
     this.total += 1
     this.emit('current', {display: person.display, total: this.total})
 

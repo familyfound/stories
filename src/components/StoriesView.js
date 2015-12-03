@@ -75,7 +75,7 @@ const StoryLink = ({story}) => (
     <Link
       style={styles.storyLink}
       activeStyle={styles.activeStoryLink}
-      to={`/read/${story.id}/${story.title.replace(/\s/g, '_')}`}
+      to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}`}
     >
       {story.starred && <Text style={styles.star}>★</Text>}
       {story.title}
