@@ -122,14 +122,14 @@ const Tree = ({stories, people, mainPerson, selected, hovered, onClick, onHover,
       hovered={hovered}
       organizedStories={organizeStories(stories)}
     />
-    {selected &&
+    {selected && people[selected] &&
       <PersonInfo
         person={people[selected]}
         people={people}
         mainPerson={mainPerson}
         organizedStories={organizeStories(stories)}
       />}
-    {hovered &&
+    {hovered && people[hovered.id] &&
       <HoverTip
         person={people[hovered.id]}
         organizedStories={organizeStories(stories)}
@@ -166,6 +166,9 @@ const PersonInfo = ({person, people, mainPerson, organizedStories}) => (
       <Text style={styles.name}>
         {person.display.name}
       </Text>
+      <Text style={styles.personRelation}>
+        {person.relation}
+      </Text>
       <Text style={styles.personPlaces}>
         {person.display.birthPlace &&
           <Text style={styles.birthPlace}>
@@ -198,6 +201,13 @@ const StoriesList = ({stories}) => (
 
 export default connect({
   props: ['stories', 'people', 'mainPerson', 'syncStatus'],
+  setTitle: ({people, location}) => {
+    if (location.query.person && people[location.query.person]) {
+      return people[location.query.person].display.name + ' | All the Stories'
+    }
+    return 'All the Stories'
+  },
+
   render: stateful({
     initial: {
       hovered: null,
@@ -260,6 +270,18 @@ const styles = {
   name: {
     textAlign: 'center',
     marginBottom: 10,
+    fontWeight: 'bold',
+  },
+
+  personRelation: {
+    textAlign: 'center',
+    fontSize: '90%',
+    marginBottom: 10,
+  },
+
+  personInfo: {
+    alignItems: 'center',
+    maxWidth: 800,
   },
 
   personYears: {
@@ -302,11 +324,6 @@ const styles = {
 
   nodeDotSelected: {
     border: '4px solid black',
-  },
-
-  personInfo: {
-    alignItems: 'center',
-    zIndex: 100,
   },
 
   stories: {

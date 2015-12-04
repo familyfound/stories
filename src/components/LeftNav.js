@@ -1,6 +1,6 @@
 
 import React from 'react'
-import {Link} from 'react-router'
+import {Link, IndexLink} from 'react-router'
 
 import View from '../View'
 
@@ -9,8 +9,12 @@ import StoriesView from './StoriesView'
 const LeftNav = ({storyId, ctx}) => (
   <View style={styles.container}>
     <View style={styles.topItems}>
-      <Link style={styles.link} onlyActiveOnIndex activeStyle={styles.activeLink} to="/">Home</Link>
+      <IndexLink style={styles.link} activeStyle={styles.activeLink} to="/">
+        All the Stories ○ Home
+      </IndexLink>
+      {/*
       <Link style={styles.link} activeStyle={styles.activeLink} to="/map">Map</Link>
+      */}
     </View>
     <StoriesView selected={storyId} ctx={ctx} />
   </View>
@@ -29,14 +33,14 @@ const styles = {
   link: {
     textDecoration: 'none',
     color: 'white',
-    backgroundColor: 'palevioletred',
+    backgroundColor: '#6561FF',
     padding: '5px 10px',
     flex: 1,
     textAlign: 'center',
   },
 
   activeLink: {
-    backgroundColor: 'purple',
+    backgroundColor: '#3733C7',
   },
 }
 

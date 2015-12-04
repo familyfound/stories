@@ -93,7 +93,7 @@ const StarButton = ({starred, setStarred}) => (
 export default connect({
   props: ['stories'],
   name: 'Read',
-  setTitle: ({stories, params: {id: storyId}}) => stories[storyId].title,
+  setTitle: ({stories, params: {id: storyId}}) => stories[storyId].title + ' | All the Stories',
   render: ({stories, params: {id: storyId}, ctx}) => (
     stories[storyId] ?
       <Read

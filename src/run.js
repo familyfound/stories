@@ -99,7 +99,7 @@ const main = async () => {
 
 const renderMain = (store, actions) => {
   render(
-    makeRouter(store, api, actions, history),
+    makeRouter(store, api, actions, db, history),
     document.getElementById('root')
   )
 }

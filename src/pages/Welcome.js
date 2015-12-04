@@ -7,6 +7,7 @@ import connect from '../connect'
 
 import Logo from '../components/Logo'
 import Tree from '../components/Tree'
+import DeleteButton from '../components/DeleteButton'
 
 const Tagline = () => <Text style={styles.tagline}>
   <Logo/> is a simple, friendly tool for getting acquainted with the stories of your ancestors.
@@ -14,7 +15,7 @@ const Tagline = () => <Text style={styles.tagline}>
 
 const message = (syncStatus, lastSync, lastSyncStart) => {
   if (syncStatus) {
-    return 'Now synchronizing! You can click the story names on the left to start reading when they appear.'
+    return 'Now synchronizing! You can click the stories on the left to start reading when they appear.'
   }
   if (!lastSyncStart) {
     return 'Click below to synchronize with familysearch and download the stories of your direct ancestors and their siblings back 9 generations.'
@@ -22,19 +23,20 @@ const message = (syncStatus, lastSync, lastSyncStart) => {
   if (!lastSync || (lastSync.getTime() < lastSyncStart.getTime())) {
     return `The last sync was incomplete (started ${lastSyncStart.toLocaleString()}), so you can click "synchronize" below to sync again, or just read the stories that are loaded :)`
   }
-  return `You can click the story names on the left to start reading them, or click the "synchronize" button to re-sync with familysearch. Last synchronized ${lastSyncStart.toLocaleString()}`
+  return `You can click the stories on the left to start reading them, or click the "synchronize" button to re-sync with familysearch. Last synchronized ${lastSyncStart.toLocaleString()}`
 }
 
-const Welcome = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) => (
-  <View style={styles.container}>
-    <View style={styles.inner}>
+const WelcomeMessage = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) => (
+  <View style={styles.inner}>
     <Tagline/>
     <Text style={styles.message}>
       {message(syncStatus, lastSync, lastSyncStart)}
     </Text>
     {syncStatus ?
       <View style={styles.syncMessage}>
-        <Text>Checking {syncStatus.display && <Text style={styles.statusName}>{syncStatus.display.name}</Text>}</Text>
+        <Text>Checking {
+          syncStatus.display && <Text style={styles.statusName}>{syncStatus.display.name}</Text>
+        }</Text>
         <Text>{syncStatus.total || 0} total searched</Text>
         <Button style={styles.syncButton} onClick={ctx.actions.stopSyncing}>
           Stop synchronizing
@@ -45,9 +47,41 @@ const Welcome = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) 
           'Synchronize' :
           'Let\'s go!'}
       </Button>}
-    </View>
-    <Tree location={location} ctx={ctx} />
   </View>
+)
+
+const TopMessage = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) => (
+  <View style={styles.topMessage}>
+    <Logo />
+    <Text style={[styles.message, styles.topText]}>
+      {message(syncStatus, lastSync, lastSyncStart)}
+    </Text>
+    {syncStatus ?
+      <View style={styles.topSyncMessage}>
+        <Text style={styles.topSyncText}>Checking {
+          syncStatus.display && <Text style={styles.statusName}>{syncStatus.display.name}</Text>
+        }</Text>
+        <Text>{syncStatus.total || 0} total searched</Text>
+        <Button style={styles.topButton} onClick={ctx.actions.stopSyncing}>
+          Stop synchronizing
+        </Button>
+      </View> :
+      <Button style={styles.topButton} onClick={ctx.actions.startSyncing}>
+        Synchronize
+      </Button>}
+  </View>
+)
+
+const Welcome = props => (
+  !props.lastSyncStart ?
+    <View style={styles.container}>
+      <WelcomeMessage {...props} />
+    </View> :
+    <View style={styles.container}>
+      <TopMessage {...props} />
+      <Tree location={props.location} ctx={props.ctx} />
+      <DeleteButton db={props.ctx.db} />
+    </View>
 )
 
 const LoggedOutWelcome = ({login, loginStatus}) => (
@@ -81,12 +115,42 @@ export default connect({
 const styles = {
   container: {
     flex: 1,
-    padding: '50px 75px 0',
     alignItems: 'center',
+  },
+
+  topMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: '10px 20px',
+  },
+
+  topText: {
+    fontSize: 14,
+    padding: '0 20px',
+    flex: 1,
+  },
+
+  topButton: {
+    padding: '5px 10px',
+    fontSize: 20,
+    borderRadius: 5,
+    marginLeft: 5,
   },
 
   statusName: {
     fontWeight: 'bold',
+  },
+
+  topSyncMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  topSyncText: {
+    width: 300,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    marginRight: 5,
   },
 
   syncMessage: {
@@ -98,6 +162,7 @@ const styles = {
 
   inner: {
     maxWidth: 600,
+    padding: '50px 75px 0',
     alignItems: 'center',
   },
 

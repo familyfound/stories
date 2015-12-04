@@ -11,8 +11,8 @@ import MapPage from './pages/Map'
 import Tree from './pages/Tree'
 import Read from './pages/Read'
 
-export default (store, api, actions, history) => {
-  const ctx = {store, api, actions, history}
+export default (store, api, actions, db, history) => {
+  const ctx = {store, api, actions, history, db}
   const createElement = (Component, props) => {
     return <Component ctx={{...ctx, params: props.params}} {...props} />
   }
