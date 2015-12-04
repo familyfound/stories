@@ -151,7 +151,10 @@ class Searcher extends EventEmitter {
         pid: person.id,
         display: person.display,
         trail,
-        parents: relatives.parents.map(({mother, father}) => ({mother: mother && mother.id, father: father && father.id})),
+        relation: calcRelation(trail, numUp, numDown),
+        parents: relatives.parents.map(
+          ({mother, father}) => ({mother: mother && mother.id, father: father && father.id})
+        ),
         children: relatives.childIds.map(id => ({
           pid: id,
           display: relatives.persons[id].display,

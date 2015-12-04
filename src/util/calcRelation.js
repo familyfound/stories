@@ -25,13 +25,14 @@ const cousinPrefix = num => {
 }
 
 const calcRelation = (trail, numUp, numDown, possessive = 'Your') => {
+  if (!trail.length) return 'You'
   const side = trail[0].rel
-  const lastUpRel = trail[numUp - 1].rel
+  const lastUpRel = numUp > 1 && trail[numUp - 1].rel
   if (!numDown) {
-    if (!numUp) {
+    if (numUp === 1) {
       return `${possessive} ${side}`
     }
-    if (numUp === 1) {
+    if (numUp === 2) {
       return `${possessive} ${side}'s ${trail[1].rel}`
     }
     return `${possessive} ${side}'s ${backPrefix(numUp - 1)}${lastUpRel}`

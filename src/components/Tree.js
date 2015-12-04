@@ -1,15 +1,17 @@
 
 import React from 'react'
+import {Link} from 'react-router'
+
 import View from '../View'
 import Button from '../Button'
 import Text from '../Text'
 import connect from '../connect'
 import stateful from '../util/stateful'
 import memOnce, {memOnce2} from '../util/memOnce'
-import {Link} from 'react-router'
+import Hoverable from './Hoverable'
 
 const HEIGHT = 400
-const WIDTH = 750
+const WIDTH = 650
 
 const flattenTree = memOnce2((people, mainPerson) => {
   if (!mainPerson || !people[mainPerson]) return []
@@ -48,7 +50,7 @@ const TreeDisplay = ({people, mainPerson, organizedStories, selected, hovered, o
         onClick,
         onHover,
         selected: selected === props.id,
-        hovered: hovered === props.id,
+        hovered: hovered && hovered.id === props.id,
       }} />)}
   </View>
 )
@@ -63,7 +65,6 @@ for (let gen=0; gen<8; gen++) {
   }
 }
 
-// TODO precompute? and store as a map?
 function getPosStyle(gen, num) {
   const r = 200 / 9 * gen * Math.pow(1.1, gen)
   const theta = arc / (Math.pow(2, gen)) * (num + .5) - arc / 2
@@ -86,12 +87,12 @@ const TreeNode = ({gen, num, id, person, selected, hovered, onHover, onClick, or
     <View
       style={[
         styles.nodeDot,
-        posStyles['' + gen + ':' + num], // getPosStyle(gen, num),
+        posStyles['' + gen + ':' + num],
         selected && styles.nodeDotSelected,
         hovered && styles.nodeDotHovered,
         getStoriesStyle(organizedStories[id]),
       ]}
-      onMouseOver={() => onHover(id)}
+      onMouseOver={(e) => onHover(id, e)}
       onMouseOut={() => onHover(id)}
       onClick={() => onClick(id)}
     />
@@ -128,36 +129,67 @@ const Tree = ({stories, people, mainPerson, selected, hovered, onClick, onHover,
         mainPerson={mainPerson}
         organizedStories={organizeStories(stories)}
       />}
+    {hovered &&
+      <HoverTip
+        person={people[hovered.id]}
+        organizedStories={organizeStories(stories)}
+        pos={hovered.pos}
+      />}
+  </View>
+)
+
+const HoverTip = ({person, pos, organizedStories}) => (
+  <View style={[styles.hoverTip, {
+    top: pos.y,
+    left: pos.x,
+  }]}>
+    <Text style={styles.hoverName}>
+      {person.display.name}
+    </Text>
+    {person.relation}
+    <Text>
+      {organizedStories[person.pid] ? organizedStories[person.pid].length : 0} stories found
+    </Text>
   </View>
 )
 
 const PersonInfo = ({person, people, mainPerson, organizedStories}) => (
   <View style={styles.personInfo}>
     <View style={styles.personTop}>
-      <Text style={styles.name}>
-        {person.display.name} {person.display.lifespan}
+      <Text style={styles.personYears}>
+        {person.display.lifespan}
         {!person.display.meta.estimated &&
           <Text style={styles.personAge}>
             {person.display.meta.age}
           </Text>}
       </Text>
-      {person.display.birthPlan &&
-        <Text style={styles.birthPlace}>
-          {person.display.birthPlace}
-        </Text>}
-      {person.display.deathPlace &&
-        <Text style={styles.deathPlace}>
-          {person.display.deathPlace}
-        </Text>}
+      <Text style={styles.name}>
+        {person.display.name}
+      </Text>
+      <Text style={styles.personPlaces}>
+        {person.display.birthPlace &&
+          <Text style={styles.birthPlace}>
+            Born: {person.display.birthPlace}
+          </Text>}
+        {person.display.deathPlace &&
+          <Text style={styles.deathPlace}>
+            Died: {person.display.deathPlace}
+          </Text>}
+      </Text>
     </View>
-    <View style={styles.stories}>
-      {organizedStories[person.pid] &&
-        organizedStories[person.pid].map(story => (
-          <Link to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}/`}>
-            {story.title}
-          </Link>
-        ))}
-    </View>
+    <StoriesList stories={organizedStories[person.pid]} />
+  </View>
+)
+
+const StoriesList = ({stories}) => (
+  <View style={styles.stories}>
+    {stories && stories.map(story => (
+      <Hoverable style={styles.storyContainer} hoverStyle={styles.storyHover}>
+        <Link style={styles.storyLink} to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}/`}>
+          {story.title}
+        </Link>
+      </Hoverable>
+    ))}
   </View>
 )
 
@@ -172,9 +204,21 @@ export default connect({
       onClick: (props, state, id) => ({
         selected: state.selected === id ? null : id,
       }),
-      onHover: (props, state, id) => ({
-        hovered: state.hovered === id ? null : id,
-      }),
+      onHover: (props, state, id, evt) => {
+        if (state.hovered && state.hovered.id === id && !evt) {
+          return {hovered: null}
+        }
+        if (!evt) return
+        return {
+          hovered: {
+            id,
+            pos: {
+              x: evt.pageX,
+              y: evt.pageY,
+            }
+          }
+        }
+      },
     },
     render: Tree,
   })
@@ -182,18 +226,56 @@ export default connect({
 
 const styles = {
   container: {
-    padding: '20px 0',
+    padding: '20px 0 50px',
     boxSizing: 'border-box',
     width: WIDTH,
     flex: 1,
     overflow: 'auto',
   },
 
+  hoverTip: {
+    zIndex: 1000,
+    position: 'fixed',
+    padding: 10,
+    backgroundColor: 'white',
+    mouseEvents: 'none',
+    marginTop: 20,
+    marginLeft: 40,
+    alignItems: 'center',
+    boxShadow: '0 1px 5px #ccc',
+  },
+
+  hoverName: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+
   personTop: {
     marginBottom: 10,
+    alignItems: 'center',
+    maxWidth: 400,
   },
 
   name: {
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+
+  personYears: {
+    textAlign: 'center',
+    marginBottom: 5,
+    fontSize: '80%',
+  },
+
+  personAge: {
+    marginLeft: 10,
+    fontStyle: 'italic',
+  },
+
+  personPlaces: {
+    fontSize: '90%',
+    lineHeight: 1.3,
+    // textAlign: 'left',
   },
 
   treeDisplay: {
@@ -226,5 +308,26 @@ const styles = {
     alignItems: 'center',
     zIndex: 100,
   },
+
+  stories: {
+    marginTop: 30,
+    alignItems: 'stretch',
+    alignSelf: 'stretch',
+  },
+
+  storyLink: {
+    textDecoration: 'none',
+    color: '#55f',
+    padding: '10px 20px',
+  },
+
+  storyContainer: {
+    cursor: 'pointer',
+  },
+
+  storyHover: {
+    backgroundColor: '#eee',
+  },
+
 }
 
