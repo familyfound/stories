@@ -185,8 +185,11 @@ const StoriesList = ({stories}) => (
   <View style={styles.stories}>
     {stories && stories.map(story => (
       <Hoverable style={styles.storyContainer} hoverStyle={styles.storyHover}>
-        <Link style={styles.storyLink} to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}/`}>
-          {story.title}
+        <Link
+          style={story.archived ? styles.storyArchived : styles.storyLink}
+          to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}/`}
+        >
+          {story.starred && '★'} {story.title}
         </Link>
       </Hoverable>
     ))}
@@ -197,13 +200,9 @@ export default connect({
   props: ['stories', 'people', 'mainPerson', 'syncStatus'],
   render: stateful({
     initial: {
-      selected: null,
       hovered: null,
     },
     helpers: {
-      onClick: (props, state, id) => ({
-        selected: state.selected === id ? null : id,
-      }),
       onHover: (props, state, id, evt) => {
         if (state.hovered && state.hovered.id === id && !evt) {
           return {hovered: null}
@@ -220,7 +219,7 @@ export default connect({
         }
       },
     },
-    render: Tree,
+    render: props => <Tree {...props} onClick={id => props.ctx.history.pushState(null, '/?person=' + id)} selected={props.location.query.person} />,
   })
 })
 
@@ -228,9 +227,11 @@ const styles = {
   container: {
     padding: '20px 0 50px',
     boxSizing: 'border-box',
-    width: WIDTH,
+    minWidth: WIDTH,
     flex: 1,
     overflow: 'auto',
+    alignSelf: 'stretch',
+    alignItems: 'center',
   },
 
   hoverTip: {
@@ -275,7 +276,6 @@ const styles = {
   personPlaces: {
     fontSize: '90%',
     lineHeight: 1.3,
-    // textAlign: 'left',
   },
 
   treeDisplay: {
@@ -319,6 +319,14 @@ const styles = {
     textDecoration: 'none',
     color: '#55f',
     padding: '10px 20px',
+  },
+
+  storyArchived: {
+    textDecoration: 'none',
+    color: '#55f',
+    padding: '10px 20px',
+    fontStyle: 'italic',
+    color: '#999',
   },
 
   storyContainer: {

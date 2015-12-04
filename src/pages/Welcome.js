@@ -25,7 +25,7 @@ const message = (syncStatus, lastSync, lastSyncStart) => {
   return `You can click the story names on the left to start reading them, or click the "synchronize" button to re-sync with familysearch. Last synchronized ${lastSyncStart.toLocaleString()}`
 }
 
-const Welcome = ({stories, syncStatus, lastSync, lastSyncStart, ctx}) => (
+const Welcome = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) => (
   <View style={styles.container}>
     <View style={styles.inner}>
     <Tagline/>
@@ -46,7 +46,7 @@ const Welcome = ({stories, syncStatus, lastSync, lastSyncStart, ctx}) => (
           'Let\'s go!'}
       </Button>}
     </View>
-    <Tree ctx={ctx} />
+    <Tree location={location} ctx={ctx} />
   </View>
 )
 
