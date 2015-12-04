@@ -50,19 +50,18 @@ const TreeDisplay = ({people, mainPerson, organizedStories, selected, hovered, o
         selected: selected === props.id,
         hovered: hovered === props.id,
       }} />)}
-    {/*
-    <TreeNode
-      gen={0}
-      num={0}
-      key={mainPerson}
-      id={mainPerson}
-      {...{people, organizedStories, selected, hovered, onClick, onHover}}
-    />
-    */}
   </View>
 )
 
 const arc = Math.PI * 1.5
+
+const posStyles = {}
+for (let gen=0; gen<8; gen++) {
+  const maxNum = Math.pow(2, gen)
+  for (let num=0; num<maxNum; num++) {
+    posStyles['' + gen + ':' + num] = getPosStyle(gen, num)
+  }
+}
 
 // TODO precompute? and store as a map?
 function getPosStyle(gen, num) {
@@ -84,33 +83,10 @@ function getStoriesStyle(stories) {
 
 const TreeNode = ({gen, num, id, person, selected, hovered, onHover, onClick, organizedStories}) => (
   <View style={[styles.node]}>
-  {/*
-    {gen < 7 && people[id] &&
-     !!people[id].parents.length &&
-     people[people[id].parents[0].mother] &&
-      <TreeNode
-        gen={gen + 1}
-        num={num * 2}
-        key={people[id].parents[0].father}
-        id={people[id].parents[0].father}
-        {...{organizedStories, people, onClick, onHover, selected, hovered}}
-      />}
-    {gen < 7 && people[id] &&
-     !!people[id].parents.length &&
-     people[people[id].parents[0].father] &&
-      <TreeNode
-        gen={gen + 1}
-        num={num * 2 + 1}
-        key={people[id].parents[0].mother}
-        id={people[id].parents[0].mother}
-        {...{organizedStories, people, onClick, onHover, selected, hovered}}
-      />}
-      */}
-
     <View
       style={[
         styles.nodeDot,
-        getPosStyle(gen, num),
+        posStyles['' + gen + ':' + num], // getPosStyle(gen, num),
         selected && styles.nodeDotSelected,
         hovered && styles.nodeDotHovered,
         getStoriesStyle(organizedStories[id]),
