@@ -31,7 +31,7 @@ const getInitialLoginStatus = (
     if (location.search.startsWith('?code=')) {
       const code = location.search.slice('?code='.length)
       history.replaceState(null, '/')
-      api.loginWithCode(code)
+      await api.loginWithCode(code)
     }
     const token = localStorage.token
     if (!token) {
