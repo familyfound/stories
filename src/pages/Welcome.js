@@ -81,7 +81,7 @@ export default connect({
 const styles = {
   container: {
     flex: 1,
-    padding: '50px 75px',
+    padding: '50px 75px 0',
     alignItems: 'center',
   },
 
@@ -116,14 +116,14 @@ const styles = {
   },
 
   loginButton: {
-    margin: '30px 0',
+    margin: '30px 0 0',
     padding: '10px 20px',
     fontSize: 25,
     borderRadius: 10,
   },
 
   syncButton: {
-    margin: '30px 0',
+    margin: '30px 0 0',
     padding: '5px 10px',
     fontSize: 20,
     borderRadius: 5,

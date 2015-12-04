@@ -5,14 +5,52 @@ import Button from '../Button'
 import Text from '../Text'
 import connect from '../connect'
 import stateful from '../util/stateful'
-import memOnce from '../util/memOnce'
+import memOnce, {memOnce2} from '../util/memOnce'
 import {Link} from 'react-router'
 
 const HEIGHT = 400
-const WIDTH = 700
+const WIDTH = 750
+
+const flattenTree = memOnce2((people, mainPerson) => {
+  if (!mainPerson || !people[mainPerson]) return []
+  const peopleList = []
+  const add = (id, gen, num) => {
+    if (!people[id]) return
+    const person = people[id]
+    peopleList.push({
+      id,
+      gen,
+      num,
+      person,
+      mother: person.parents.length && person.parents[0].mother,
+      father: person.parents.length && person.parents[0].father,
+    })
+    // TODO find siblings
+  }
+
+  add(mainPerson, 0, 0)
+  for (let i=0; i<peopleList.length; i++) {
+    if (peopleList[i].gen < 8) {
+      const {mother, father, gen, num} = peopleList[i]
+      add(mother, gen + 1, num * 2 + 1)
+      add(father, gen + 1, num * 2)
+    }
+  }
+
+  return peopleList
+})
 
 const TreeDisplay = ({people, mainPerson, organizedStories, selected, hovered, onClick, onHover}) => (
   <View style={styles.treeDisplay}>
+    {flattenTree(people, mainPerson).map(props =>
+      <TreeNode {...props} {...{
+        organizedStories,
+        onClick,
+        onHover,
+        selected: selected === props.id,
+        hovered: hovered === props.id,
+      }} />)}
+    {/*
     <TreeNode
       gen={0}
       num={0}
@@ -20,6 +58,7 @@ const TreeDisplay = ({people, mainPerson, organizedStories, selected, hovered, o
       id={mainPerson}
       {...{people, organizedStories, selected, hovered, onClick, onHover}}
     />
+    */}
   </View>
 )
 
@@ -43,8 +82,9 @@ function getStoriesStyle(stories) {
   return {backgroundColor: '#423DFF'}
 }
 
-const TreeNode = ({gen, num, id, selected, hovered, onHover, onClick, people, organizedStories}) => (
+const TreeNode = ({gen, num, id, person, selected, hovered, onHover, onClick, organizedStories}) => (
   <View style={[styles.node]}>
+  {/*
     {gen < 7 && people[id] &&
      !!people[id].parents.length &&
      people[people[id].parents[0].mother] &&
@@ -65,13 +105,14 @@ const TreeNode = ({gen, num, id, selected, hovered, onHover, onClick, people, or
         id={people[id].parents[0].mother}
         {...{organizedStories, people, onClick, onHover, selected, hovered}}
       />}
+      */}
 
     <View
       style={[
         styles.nodeDot,
         getPosStyle(gen, num),
-        selected === id && styles.nodeDotSelected,
-        hovered === id && styles.nodeDotHovered,
+        selected && styles.nodeDotSelected,
+        hovered && styles.nodeDotHovered,
         getStoriesStyle(organizedStories[id]),
       ]}
       onMouseOver={() => onHover(id)}
@@ -165,7 +206,8 @@ export default connect({
 
 const styles = {
   container: {
-    marginTop: 50,
+    padding: '20px 0',
+    boxSizing: 'border-box',
     width: WIDTH,
     flex: 1,
     overflow: 'auto',
@@ -187,6 +229,8 @@ const styles = {
 
   nodeDot: {
     position: 'absolute',
+    marginLeft: -10,
+    marginTop: -10,
     width: 20,
     height: 20,
     borderRadius: 10,
