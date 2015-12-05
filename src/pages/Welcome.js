@@ -52,7 +52,6 @@ const WelcomeMessage = ({stories, location, syncStatus, lastSync, lastSyncStart,
 
 const TopMessage = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) => (
   <View style={styles.topMessage}>
-    <Logo />
     <Text style={[styles.message, styles.topText]}>
       {message(syncStatus, lastSync, lastSyncStart)}
     </Text>
