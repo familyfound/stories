@@ -51,11 +51,14 @@ const main = async () => {
   // login
   // TODO could I just show a completely different database based on the
   // logged-in user? hmmmm
-  await db.open()
+  const loginStatus = await getInitialLoginStatus()
+  if (loginStatus) {
+    await db.init(api.user.personId)
+  }
   const dbState = await db.getState()
   const store = window.store = new Store({
     ...dbState,
-    loginStatus: await getInitialLoginStatus(),
+    loginStatus,
     user: api.user,
     searchText: '',
     syncStatus: false,

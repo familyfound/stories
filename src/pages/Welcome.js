@@ -6,7 +6,7 @@ import Text from '../Text'
 import connect from '../connect'
 
 import Logo from '../components/Logo'
-import Tree from '../components/Tree'
+import Tree from '../components/Tree/Tree'
 import DeleteButton from '../components/DeleteButton'
 
 const Tagline = () => <Text style={styles.tagline}>
@@ -130,10 +130,12 @@ const styles = {
   },
 
   topButton: {
-    padding: '5px 10px',
-    fontSize: 20,
+    padding: '3px 7px',
+    fontSize: 14,
+    borderColor: '#aaa',
+    color: '#777',
     borderRadius: 5,
-    marginLeft: 5,
+    marginLeft: 10,
   },
 
   statusName: {
@@ -155,6 +157,7 @@ const styles = {
   syncMessage: {
     margin: '20px 0',
     lineHeight: 1.6,
+    fontSize: '90%',
     alignItems: 'center',
     textAlign: 'center',
   },

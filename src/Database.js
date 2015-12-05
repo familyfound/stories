@@ -1,21 +1,33 @@
 import PromiseObj from './util/PromiseObj'
 
+const NOT_INITIALIZED = Symbol('Database not initialized!')
+
 export default class Database {
   constructor() {
-    const db = this._db = new Dexie('all-the-stories')
+    this._db = NOT_INITIALIZED
+  }
+
+  init(userId) {
+    const db = this._db = new Dexie('all-the-stories:' + userId)
     db.version(1).stores({
       settings: 'id',
       stories: 'id, dateAdded',
       // TODO add `owner`, to support multi-login
       people: 'pid, dateAdded',
     })
-  }
-
-  open() {
-    return this._db.open()
+    return db.open()
   }
 
   getState() {
+    if (this._db === NOT_INITIALIZED) {
+      return {
+        hasStarted: false,
+        lastSync: null,
+        lastSyncStart: null,
+        people: {},
+        stories: {},
+      }
+    }
     return PromiseObj({
       hasStarted: this._db.settings.get('hasStarted').then(val => val ? true : false),
       lastSync: this._db.settings.get('lastSync').then(val => val ? val.date : null),
