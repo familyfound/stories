@@ -8,9 +8,9 @@ export const getStarted = () => {
   return {type: 'getStarted'}
 }
 
-export const setLoggedIn = val => ({
+export const setLoggedIn = (loginStatus, user) => ({
   type: 'setLoggedIn',
-  args: {loginStatus: val}
+  args: {loginStatus, user}
 })
 
 export const startSyncing = val => {

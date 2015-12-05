@@ -5,8 +5,8 @@ export const getStarted = state => ({
   ...state, hasStarted: true
 })
 
-export const setLoggedIn = (state, {loginStatus}) => ({
-  ...state, loginStatus
+export const setLoggedIn = (state, {loginStatus, user}) => ({
+  ...state, loginStatus, user
 })
 
 export const startSyncing = (state, {started}) => ({...state, syncStatus: true, lastSyncStart: started})

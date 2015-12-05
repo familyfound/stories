@@ -31,7 +31,7 @@ const getInitialLoginStatus = (
     if (location.search.startsWith('?code=')) {
       const code = location.search.slice('?code='.length)
       history.replaceState(null, '/')
-      await api.loginWithCode(code)
+      return await api.loginWithCode(code)
     }
     const token = localStorage.token
     if (!token) {
@@ -56,7 +56,7 @@ const main = async () => {
   const store = window.store = new Store({
     ...dbState,
     loginStatus: await getInitialLoginStatus(),
-    mainPerson: api.user && api.user.personId,
+    user: api.user,
     searchText: '',
     syncStatus: false,
     searchResults: searchResults(dbState.stories, ''),

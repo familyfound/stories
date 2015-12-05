@@ -72,6 +72,10 @@ export default class APIManager {
     }
   }
 
+  logout() {
+    delete localStorage.token
+  }
+
   async checkToken(token) {
     try {
       this.user = await this.getUser(token)

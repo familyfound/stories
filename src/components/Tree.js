@@ -111,7 +111,7 @@ const organizeStories = memOnce(stories => {
   return map
 })
 
-const Tree = ({stories, people, mainPerson, selected, hovered, onClick, onHover, syncStatus}) => (
+const Tree = ({stories, people, user: {personId: mainPerson}, selected, hovered, onClick, onHover, syncStatus}) => (
   <View style={styles.container}>
     <TreeDisplay
       people={people}
@@ -200,7 +200,7 @@ const StoriesList = ({stories}) => (
 )
 
 export default connect({
-  props: ['stories', 'people', 'mainPerson', 'syncStatus'],
+  props: ['stories', 'people', 'user', 'syncStatus'],
   setTitle: ({people, location}) => {
     if (location.query.person && people[location.query.person]) {
       return people[location.query.person].display.name + ' | All the Stories'
@@ -229,7 +229,13 @@ export default connect({
         }
       },
     },
-    render: props => <Tree {...props} onClick={id => props.ctx.history.pushState(null, '/?person=' + id)} selected={props.location.query.person} />,
+    render: props => (
+      props.user ? <Tree
+        {...props}
+        onClick={id => props.ctx.history.pushState(null, '/?person=' + id)}
+        selected={props.location.query.person}
+      /> : <span> No login </span>
+    ),
   })
 })
 
