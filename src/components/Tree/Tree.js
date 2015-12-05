@@ -18,8 +18,8 @@ const WIDTH = 650
 
 const TreeDisplay = ({people, mainPerson, organizedStories, selected, hovered, onClick, onHover}) => (
   <View style={styles.treeDisplay}>
-    {flattenTree(people, mainPerson).map(props =>
-      <TreeNode {...props} {...{
+    {flattenTree(people, mainPerson).map((props, i) =>
+      <TreeNode key={props.id + ':' + i} {...props} {...{
         organizedStories,
         onClick,
         onHover,

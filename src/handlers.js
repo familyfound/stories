@@ -9,6 +9,12 @@ export const setLoggedIn = (state, {loginStatus, user}) => ({
   ...state, loginStatus, user
 })
 
+export const logOut = (state) => ({
+  ...state,
+  loginStatus: false,
+  user: null,
+})
+
 export const startSyncing = (state, {started}) => ({...state, syncStatus: true, lastSyncStart: started})
 export const stopSyncing = (state, {completed}) => ({
   ...state,

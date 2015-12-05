@@ -10,7 +10,7 @@ import Hoverable from './../Hoverable'
 const StoriesList = ({stories}) => (
   <View style={styles.stories}>
     {stories && stories.map(story => (
-      <Hoverable style={styles.storyContainer} hoverStyle={styles.storyHover}>
+      <Hoverable key={story.id} style={styles.storyContainer} hoverStyle={styles.storyHover}>
         <Link
           style={story.archived ? styles.storyArchived : styles.storyLink}
           to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}/`}

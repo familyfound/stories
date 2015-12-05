@@ -13,6 +13,11 @@ export const setLoggedIn = (loginStatus, user) => ({
   args: {loginStatus, user}
 })
 
+export const logOut = () => {
+  api.logOut()
+  return {type: 'logOut'}
+}
+
 export const startSyncing = val => {
   api.startSyncing()
   const started = new Date()

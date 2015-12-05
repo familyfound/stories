@@ -68,6 +68,9 @@ const TopMessage = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx
       <Button style={styles.topButton} onClick={ctx.actions.startSyncing}>
         Synchronize
       </Button>}
+    <Button onClick={ctx.actions.logOut} style={styles.logOutButton}>
+      Sign out
+    </Button>
   </View>
 )
 
@@ -135,6 +138,14 @@ const styles = {
     borderColor: '#aaa',
     color: '#777',
     borderRadius: 5,
+    marginLeft: 10,
+  },
+
+  logOutButton: {
+    border: 'none',
+    padding: '3px 7px',
+    fontSize: 14,
+    color: '#777',
     marginLeft: 10,
   },
 
