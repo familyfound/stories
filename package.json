@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node server.js"
+    "start": "babel-node server.js",
+    "deploy": "rm -f static/build-* && node build.js && surge -d stories.familyfoundapp.com ."
   },
   "author": "",
   "license": "ISC",

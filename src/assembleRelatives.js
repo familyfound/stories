@@ -100,10 +100,10 @@ const addMeta = (person) => {
 }
 
 const estimateMeta = (person, families) => {
-  let meta = getMeta(person.display)
+  const meta = getMeta(person.display)
   // TODO if birth || death is estimated, find the missing one
   if (!meta.born || isNaN(meta.born)) {
-    meta = ofind(families, family => {
+    return ofind(families, family => {
       const birthYears = family.children
         .map(child => getMeta(child.display).age)
         .filter(age => age !== false)
@@ -120,7 +120,7 @@ const estimateMeta = (person, families) => {
         estimatedDeath: true,
         estimated: true,
       }
-    })
+    }) || meta
   }
   return meta
 }

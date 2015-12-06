@@ -16,11 +16,13 @@ import PersonInfo from './PersonInfo'
 const HEIGHT = 400
 const WIDTH = 650
 
+// TODO maybe use SVG for a better tree representation, with larger hit
+// targets?
 const TreeDisplay = ({people, mainPerson, organizedStories, selected, onClick}) => (
   <View style={styles.treeDisplay}>
     {flattenTree(people, mainPerson).map((props, i) =>
       <TreeNode key={props.id + ':' + i} {...props} {...{
-        organizedStories[props.id],
+        stories: organizedStories[props.id],
         onClick,
         selected: selected === props.id,
       }} />)}

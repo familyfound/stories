@@ -1,4 +1,6 @@
 node_modules
 build
 _config.js
+index.html
 static/build.js
+static/build-*

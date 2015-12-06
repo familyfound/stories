@@ -21,7 +21,7 @@ app.get('/static/*', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'))
+  res.sendFile(path.join(__dirname, 'index.dev.html'))
 })
 
 const PORT = process.env.PORT || 7200
