@@ -16,15 +16,13 @@ import PersonInfo from './PersonInfo'
 const HEIGHT = 400
 const WIDTH = 650
 
-const TreeDisplay = ({people, mainPerson, organizedStories, selected, hovered, onClick, onHover}) => (
+const TreeDisplay = ({people, mainPerson, organizedStories, selected, onClick}) => (
   <View style={styles.treeDisplay}>
     {flattenTree(people, mainPerson).map((props, i) =>
       <TreeNode key={props.id + ':' + i} {...props} {...{
-        organizedStories,
+        organizedStories[props.id],
         onClick,
-        onHover,
         selected: selected === props.id,
-        hovered: hovered && hovered.id === props.id,
       }} />)}
     <View style={styles.treeDisplayLabel}>
       <Text>Stories</Text>
@@ -45,15 +43,13 @@ const organizeStories = memOnce(stories => {
   return map
 })
 
-const Tree = ({stories, people, user: {personId: mainPerson}, selected, hovered, onClick, onHover, syncStatus}) => (
+const Tree = ({stories, people, user: {personId: mainPerson}, selected, onClick, syncStatus}) => (
   <View style={styles.container}>
     <TreeDisplay
       people={people}
       mainPerson={mainPerson}
       selected={selected}
       onClick={onClick}
-      onHover={onHover}
-      hovered={hovered}
       organizedStories={organizeStories(stories)}
     />
     {selected && people[selected] &&
@@ -63,27 +59,6 @@ const Tree = ({stories, people, user: {personId: mainPerson}, selected, hovered,
         mainPerson={mainPerson}
         organizedStories={organizeStories(stories)}
       />}
-    {hovered && people[hovered.id] &&
-      <HoverTip
-        person={people[hovered.id]}
-        organizedStories={organizeStories(stories)}
-        pos={hovered.pos}
-      />}
-  </View>
-)
-
-const HoverTip = ({person, pos, organizedStories}) => (
-  <View style={[styles.hoverTip, {
-    top: pos.y,
-    left: pos.x,
-  }]}>
-    <Text style={styles.hoverName}>
-      {person.display.name}
-    </Text>
-    {person.relation}
-    <Text>
-      {organizedStories[person.pid] ? organizedStories[person.pid].length : 0} stories found
-    </Text>
   </View>
 )
 
@@ -96,35 +71,13 @@ export default connect({
     return 'All the Stories'
   },
 
-  render: stateful({
-    initial: {
-      hovered: null,
-    },
-    helpers: {
-      onHover: (props, state, id, evt) => {
-        if (state.hovered && state.hovered.id === id && !evt) {
-          return {hovered: null}
-        }
-        if (!evt) return
-        return {
-          hovered: {
-            id,
-            pos: {
-              x: evt.pageX,
-              y: evt.pageY,
-            }
-          }
-        }
-      },
-    },
-    render: props => (
-      props.user ? <Tree
-        {...props}
-        onClick={id => props.ctx.history.pushState(null, '/?person=' + id)}
-        selected={props.location.query.person || props.user.personId}
-      /> : <span> No login </span>
-    ),
-  })
+  render: props => (
+    props.user ? <Tree
+      {...props}
+      onClick={id => props.ctx.history.pushState(null, '/?person=' + id)}
+      selected={props.location.query.person || props.user.personId}
+    /> : <span> No login </span>
+  ),
 })
 
 const styles = {
@@ -138,23 +91,6 @@ const styles = {
     alignItems: 'center',
   },
 
-  hoverTip: {
-    zIndex: 1000,
-    position: 'fixed',
-    padding: 10,
-    backgroundColor: 'white',
-    mouseEvents: 'none',
-    marginTop: 20,
-    marginLeft: 40,
-    alignItems: 'center',
-    boxShadow: '0 1px 5px #ccc',
-  },
-
-  hoverName: {
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-
   treeDisplay: {
     position: 'relative',
     height: HEIGHT,
@@ -163,6 +99,7 @@ const styles = {
   },
 
   treeDisplayLabel: {
+    pointerEvents: 'none',
     left: 0,
     right: 0,
     position: 'absolute',
@@ -175,6 +112,5 @@ const styles = {
     fontSize: '80%',
     marginTop: 5,
   },
-
 }
 

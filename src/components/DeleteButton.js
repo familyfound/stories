@@ -9,7 +9,9 @@ const DeleteButton = ({db, really, toggle}) => (
     <View style={styles.deleteButton}>
       <Button style={styles.really} onClick={() => {
         db._db.delete()
-        setTimeout(() => location.reload(), 500)
+        setTimeout(() => {
+          location = '/'
+        }, 500)
       }}>Really delete</Button>
       <Button onClick={toggle}>
         Never mind

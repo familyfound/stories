@@ -3,24 +3,31 @@ import React from 'react'
 
 import View from '../../View'
 // TODO maybe use this instead for hover state?
-import Hoverable from './../Hoverable'
 
 import posStyles from './posStyles'
+import stateful from '../../util/stateful'
+import HoverTip from './HoverTip'
 
-const TreeNode = ({gen, num, id, person, selected, hovered, onHover, onClick, organizedStories}) => (
-  <View style={[styles.node]}>
+const TreeNode = ({gen, num, id, person, selected, hovered, onHover, onClick, stories}) => (
+  <View>
     <View
       style={[
         styles.nodeDot,
         posStyles['' + gen + ':' + num],
         selected && styles.nodeDotSelected,
         hovered && styles.nodeDotHovered,
-        getStoriesStyle(organizedStories[id]),
+        getStoriesStyle(stories),
       ]}
-      onMouseOver={(e) => onHover(id, e)}
-      onMouseOut={() => onHover(id)}
+      onMouseOver={(e) => onHover(e)}
+      onMouseOut={() => onHover()}
       onClick={() => onClick(id)}
     />
+    {hovered && person &&
+      <HoverTip
+        person={person}
+        stories={stories}
+        pos={hovered}
+      />}
   </View>
 )
 
@@ -32,7 +39,30 @@ function getStoriesStyle(stories) {
   return {backgroundColor: '#423DFF'}
 }
 
-export default TreeNode
+export default stateful({
+  initial: {
+    hovered: null,
+  },
+  shouldUpdate: (nextProps, prevProps) => (
+    nextProps.selected !== prevProps.selected ||
+    nextProps.id !== prevProps.id ||
+    nextProps.stories !== prevProps.stories
+  ),
+  helpers: {
+    onHover: (props, state, evt) => {
+      if (!evt) {
+        return {hovered: false}
+      }
+      return {
+        hovered: {
+          x: evt.pageX,
+          y: evt.pageY,
+        }
+      }
+    },
+  },
+  render: TreeNode,
+})
 
 const styles = {
 

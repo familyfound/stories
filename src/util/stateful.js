@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default ({initial, helpers, shouldReset, render, name}) => {
+export default ({initial, helpers, shouldReset, shouldUpdate, render, name}) => {
   if ('object' !== typeof initial) {
     throw new Error(`Invalid initial state for ${name || render.displayName || render.name}`)
   }
@@ -28,6 +28,14 @@ export default ({initial, helpers, shouldReset, render, name}) => {
       if (shouldReset && shouldReset(nextProps, this.props)) {
         this.setState(initial)
       }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+      if (nextState !== this.state) return true
+      if (shouldUpdate && !shouldUpdate(nextProps, this.props)) {
+        return false
+      }
+      return true
     }
 
     render() {
