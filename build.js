@@ -18,6 +18,7 @@ webpack(config, function(err, stats) {
   })
   var html = fs.readFileSync('./index.dev.html').toString('utf8').replace('"/static/build.js"', '"/static/build-' + data.hash + '.js"')
   fs.writeFileSync('./index.html', html, 'utf8')
+  fs.writeFileSync('./200.html', html, 'utf8')
 })
 
 

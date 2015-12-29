@@ -5,6 +5,7 @@ import View from '../View'
 import Button from '../Button'
 import connect from '../connect'
 import {memOnce2} from '../util/memOnce'
+import MediaQueried from '../util/MediaQueried'
 
 import PeopleInfo from '../components/PeopleInfo'
 
@@ -24,16 +25,20 @@ const Read = ({story, setArchived, setStarred, ctx}) => (
       <View style={styles.spacer} />
       {storyLink(story)}
     </View>
-    <View style={styles.body}>
-      <View style={styles.text}>
-        <Text style={styles.textInner}>
-          {annotateText(story.text, story.people)}
-        </Text>
-      </View>
-      <View style={styles.peopleInfo}>
-        <PeopleInfo story={story} api={ctx.api} />
-      </View>
-    </View>
+    <MediaQueried maxWidth={1400}>
+      {active =>
+        <View style={[styles.body, active && styles.smallBody]}>
+          <View style={active ? styles.smallText : styles.text}>
+            <Text style={styles.textInner}>
+              {annotateText(story.text, story.people)}
+            </Text>
+          </View>
+          <View style={styles.peopleInfo}>
+            <PeopleInfo story={story} api={ctx.api} />
+          </View>
+        </View>
+      }
+    </MediaQueried>
   </View>
 )
 
@@ -155,18 +160,29 @@ const styles = {
 
   match: {
     fontWeight: 'bold',
-    // backgroundColor: 'red',
   },
 
   text: {
-    alignItems: 'center',
     flex: 1,
     overflow: 'auto',
+    alignItems: 'center',
+    borderRight: '2px solid #ccc',
   },
 
   body: {
     flexDirection: 'row', // TODO make this change based on screen width
     flex: 1,
+  },
+
+  smallBody: {
+    flexDirection: 'column',
+    overflow: 'auto',
+  },
+
+  smallText: {
+    alignItems: 'center',
+    borderBottom: '2px solid #ccc',
+    minHeight: 'initial',
   },
 
   textInner: {

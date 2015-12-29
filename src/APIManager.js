@@ -5,9 +5,8 @@ import assembleRelatives from './assembleRelatives'
 import get from './util/get'
 
 export default class APIManager {
-  constructor(base, clientId) {
-    this.base = base
-    this.clientId = clientId
+  constructor(config) {
+    this.config = config
     this.get = this.send.bind(this, 'GET')
     this.cache = makeCache(this, [
       'personWithRelationships',
@@ -45,7 +44,7 @@ export default class APIManager {
 
   send(method, url, body, type, token) {
     if (!url.match(/^https?:\/\//)) {
-      url = this.base + url
+      url = this.config.apiBase + url
     }
     return get(method, url, {
       'Content-type': 'application/json',
@@ -55,14 +54,16 @@ export default class APIManager {
   }
 
   login() {
-    const redirect = encodeURIComponent(location.protocol + '//' + location.host + '/')
+    // TODO remove once the redirect URLs are fixed
+    const hasEndingSlash = location.host === 'stories.local'
+    const redirect = encodeURIComponent(location.protocol + '//' + location.host + (hasEndingSlash ? '/' : ''))
     console.log('want to log in')
-    window.location = `${this.base}/cis-web/oauth2/v3/authorization?response_type=code&client_id=${this.clientId}&redirect_uri=${redirect}`
+    window.location = `${this.config.identBase}/cis-web/oauth2/v3/authorization?response_type=code&client_id=${this.config.clientId}&redirect_uri=${redirect}`
   }
 
   async loginWithCode(code) {
-    const body = `grant_type=authorization_code&client_id=${this.clientId}&code=${code}`
-    const result = await get('POST', this.base + '/cis-web/oauth2/v3/token', {
+    const body = `grant_type=authorization_code&client_id=${this.config.clientId}&code=${code}`
+    const result = await get('POST', this.config.identBase + '/cis-web/oauth2/v3/token', {
       'Content-type': 'application/x-www-form-urlencoded',
       Accept: 'application/x-fs-v1+json,application/json',
     }, body)
@@ -128,7 +129,7 @@ export default class APIManager {
   }
 
   portraitURL(pid) {
-    return `${this.base}/platform/tree/persons/${pid}/portrait`
+    return `${this.config.apiBase}/platform/tree/persons/${pid}/portrait`
   }
 }
 

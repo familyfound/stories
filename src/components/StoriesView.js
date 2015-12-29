@@ -12,7 +12,7 @@ import stateful from '../util/stateful'
 
 const renderStory = (story, selected) => (
   story.id == selected ?
-    <JumpIntoView><StoryLink key={story.id} story={story} /></JumpIntoView> :
+    <JumpIntoView key={story.id}><StoryLink key={story.id} story={story} /></JumpIntoView> :
     <StoryLink key={story.id} story={story} />
 )
 

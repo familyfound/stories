@@ -54,6 +54,7 @@ export default (pid, {relationships = [], childAndParentsRelationships = [], per
     }
   })
 
+    // parents, parentIds, childIds, families[]
   childAndParentsRelationships.forEach(({child, father, mother}) => {
     const childId = child && child.resourceId
     const fatherId = father ? father.resourceId : 'missing'
@@ -171,5 +172,3 @@ const ofind = (o, fn) => {
   }
   return null
 }
-
-

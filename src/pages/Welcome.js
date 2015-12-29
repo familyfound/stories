@@ -32,21 +32,13 @@ const WelcomeMessage = ({stories, location, syncStatus, lastSync, lastSyncStart,
     <Text style={styles.message}>
       {message(syncStatus, lastSync, lastSyncStart)}
     </Text>
-    {syncStatus ?
-      <View style={styles.syncMessage}>
-        <Text>Checking {
-          syncStatus.display && <Text style={styles.statusName}>{syncStatus.display.name}</Text>
-        }</Text>
-        <Text>{syncStatus.total || 0} total searched</Text>
-        <Button style={styles.syncButton} onClick={ctx.actions.stopSyncing}>
-          Stop synchronizing
-        </Button>
-      </View> :
-      <Button style={styles.syncButton} onClick={ctx.actions.startSyncing}>
-        {lastSyncStart ?
-          'Synchronize' :
-          'Let\'s go!'}
-      </Button>}
+    <Button style={styles.syncButton} onClick={ctx.actions.startSyncing}>
+      Let's go!
+    </Button>
+    <Text style={styles.orText}>or</Text>
+    <Button onClick={ctx.actions.logOut} style={styles.logOutButton}>
+      Sign out
+    </Button>
   </View>
 )
 
@@ -139,6 +131,13 @@ const styles = {
     color: '#777',
     borderRadius: 5,
     marginLeft: 10,
+    marginRight: 10,
+  },
+
+  orText: {
+    margin: "15px 0 10px",
+    color: "#999",
+    fontSize: 10,
   },
 
   logOutButton: {
@@ -146,7 +145,6 @@ const styles = {
     padding: '3px 7px',
     fontSize: 14,
     color: '#777',
-    marginLeft: 10,
   },
 
   statusName: {

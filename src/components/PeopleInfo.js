@@ -66,7 +66,7 @@ export default probably({
 const styles = {
   container: {
     padding: 40,
-    width: 600,
+    maxWidth: 600,
     flex: 1,
     overflow: 'auto',
   },
