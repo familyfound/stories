@@ -9,6 +9,7 @@ import MediaQueried from '../util/MediaQueried'
 
 import PeopleInfo from '../components/PeopleInfo'
 
+// TODO show a "X minute read" thing somewhere, maybe in all the thing
 const Read = ({story, setArchived, setStarred, ctx}) => (
   <View key={story.id} style={styles.container}>
     <View style={styles.title}>

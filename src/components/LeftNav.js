@@ -12,7 +12,7 @@ const LeftNav = ({storyId, ctx}) => (
       <IndexLink style={styles.link} activeStyle={styles.activeLink} to="/">
         All the Stories ○ Home
       </IndexLink>
-      {/*
+      {/* TODO map things!
       <Link style={styles.link} activeStyle={styles.activeLink} to="/map">Map</Link>
       */}
     </View>

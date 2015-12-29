@@ -77,6 +77,10 @@ const StoryLink = ({story}) => (
       activeStyle={styles.activeStoryLink}
       to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}`}
     >
+      <span style={styles.readLength}>
+        {parseInt(story.text.split(/\s+/g).length / 200)}
+        <span style={styles.readLengthMin}>min</span>
+      </span>
       {story.starred && <Text style={styles.star}>★</Text>}
       {story.title}
     </Link>
@@ -148,6 +152,18 @@ const styles = {
 
   star: {
     marginRight: 5,
+  },
+
+  readLength: {
+    float: 'right',
+    fontSize: '70%',
+    marginLeft: 5,
+    opacity: .9,
+  },
+
+  readLengthMin: {
+    fontSize: '70%',
+    opacity: .7,
   },
 
   activeStoryLink: {

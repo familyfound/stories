@@ -16,6 +16,10 @@ const StoriesList = ({stories}) => (
           to={`/read/${story.id}/${story.title.replace(/\s+/g, '_')}/`}
         >
           {story.starred && '★'} {story.title}
+          <span style={styles.readLength}>
+            {parseInt(story.text.split(/\s+/g).length / 200)}
+            <span style={styles.readLengthMin}>min</span>
+          </span>
         </Link>
       </Hoverable>
     ))}
@@ -52,4 +56,17 @@ const styles = {
   storyHover: {
     backgroundColor: '#eee',
   },
+
+  readLength: {
+    float: 'right',
+    marginLeft: 10,
+    fontSize: '90%',
+    opacity: .9,
+  },
+
+  readLengthMin: {
+    fontSize: '70%',
+    opacity: .7,
+  },
+
 }
