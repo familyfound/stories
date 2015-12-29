@@ -6,14 +6,14 @@ import Button from '../Button'
 
 const rmap = (lst, fn) => {
   const values = []
-  lst.forEach(item => values.unshift(fn(item)))
+  lst.forEach((item, i) => values.unshift(fn(item, i)))
   return values
 }
 
 const PersonTrail = ({trail}) => (
   <View style={styles.container}>
     {rmap(trail, person => (
-      <View style={styles.person}>
+      <View key={person.id} style={styles.person}>
         <Text style={styles.personTop}>
           {person.name} {person.lifespan}
         </Text>

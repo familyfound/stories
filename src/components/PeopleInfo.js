@@ -10,7 +10,7 @@ import PersonTrail from './PersonTrail'
 const PeopleInfo = ({story, peopleInfo}) => (
   <View style={styles.container}>
     {story.people.map(person => (
-      <PersonInfo person={person} info={peopleInfo[person.pid]} />
+      <PersonInfo key={person.pid} person={person} info={peopleInfo[person.pid]} />
     ))}
   </View>
 )
