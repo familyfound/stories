@@ -192,5 +192,6 @@ const styles = {
     lineHeight: 1.5,
     fontFamily: 'serif', // TODO find a good font
     maxWidth: 800,
+    width: '100%',
   },
 }
