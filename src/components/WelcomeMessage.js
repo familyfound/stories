@@ -17,7 +17,7 @@ export default connect({
         <View style={[styles.mainText, styles.paragraph]}>{message}</View>
         {loginStatus !== true &&
           <Text style={styles.paragraph}>
-            In order to get started, you need to go over to familysearch.org and log in.
+            In order to get started, you need to go over to FamilySearch.org and log in.
           </Text>}
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           <View style={{width: 350}}>
@@ -25,9 +25,9 @@ export default connect({
               <GetStartedButton onClick={() => dispatch(creators.getStarted())} /> :
               <LoginButton loginStatus={loginStatus} />}
             {loginStatus === true ? <Text style={styles.smallBody}>
-              To get you started, we'll automatically search through your family tree from familysearch.org and find some relatives of yours that are likely to need research done.
+              To get you started, we'll automatically search through your family tree from FamilySearch.org and find some relatives of yours that are likely to need research done.
             </Text> : <Text style={styles.smallBody}>
-              This will open <a target='_blank' href="https://familysearch.org">familysearch.org</a> in a new tab. Once you've logged in there, come back here to continue.
+              This will open <a target='_blank' href="https://familysearch.org">FamilySearch.org</a> in a new tab. Once you've logged in there, come back here to continue.
             </Text>}
           </View>
         </View>

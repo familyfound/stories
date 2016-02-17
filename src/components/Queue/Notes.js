@@ -20,7 +20,7 @@ const withoutExclamation = text => text[0] === '!' ? text.slice(1) : text
 
 const Notes = ({notes, api}) => (
   <View style={styles.container}>
-    {!notes.length && <View style={styles.empty}>No notes found on familysearch</View>}
+    {!notes.length && <View style={styles.empty}>No notes found on FamilySearch</View>}
     {notes.filter(isGoodNote).map(note => <ExpandableNote key={note.id} note={note} myTreeUserId={api.user.treeUserId} />)}
   </View>
 )
@@ -40,12 +40,12 @@ const ExpandableNote = expandable(Note)
 
 const Loading = () => <View style={styles.container}>
   <Text style={styles.loading}>
-    Loading notes from familysearch...
+    Loading notes from FamilySearch...
   </Text>
 </View>
 const ErrorMessage = () => <View style={styles.container}>
   <Text style={styles.error}>
-    Unable to load notes from familysearch
+    Unable to load notes from FamilySearch
   </Text>
 </View>
 

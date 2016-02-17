@@ -18,12 +18,12 @@ const message = (syncStatus, lastSync, lastSyncStart) => {
     return 'Now synchronizing! You can click the stories on the left to start reading when they appear.'
   }
   if (!lastSyncStart) {
-    return 'Click below to synchronize with familysearch and download the stories of your direct ancestors and their siblings back 9 generations.'
+    return 'Click below to synchronize with FamilySearch and download the stories of your direct ancestors and their siblings back 9 generations.'
   }
   if (!lastSync || (lastSync.getTime() < lastSyncStart.getTime())) {
     return `The last sync was incomplete (started ${lastSyncStart.toLocaleString()}), so you can click "synchronize" below to sync again, or just read the stories that are loaded :)`
   }
-  return `You can click the stories on the left to start reading them, or click the "synchronize" button to re-sync with familysearch. Last synchronized ${lastSyncStart.toLocaleString()}`
+  return `You can click the stories on the left to start reading them, or click the "synchronize" button to re-sync with FamilySearch. Last synchronized ${lastSyncStart.toLocaleString()}`
 }
 
 const WelcomeMessage = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) => (
