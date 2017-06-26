@@ -9,21 +9,23 @@ import Logo from '../components/Logo'
 import Tree from '../components/Tree/Tree'
 import DeleteButton from '../components/DeleteButton'
 
+import i18n from '../i18n'
+
 const Tagline = () => <Text style={styles.tagline}>
-  <Logo/> is a simple, friendly tool for getting acquainted with the stories of your ancestors.
+  <Logo/> {i18n.tagLine}
 </Text>
 
 const message = (syncStatus, lastSync, lastSyncStart) => {
   if (syncStatus) {
-    return 'Now synchronizing! You can click the stories on the left to start reading when they appear.'
+    return i18n.nowSyncing
   }
   if (!lastSyncStart) {
-    return 'Click below to synchronize with FamilySearch and download the stories of your direct ancestors and their siblings back 9 generations.'
+    return i18n.startSyncing
   }
   if (!lastSync || (lastSync.getTime() < lastSyncStart.getTime())) {
-    return `The last sync was incomplete (started ${lastSyncStart.toLocaleString()}), so you can click "synchronize" below to sync again, or just read the stories that are loaded :)`
+    return i18n.incompleteSync(lastSyncStart);
   }
-  return `You can click the stories on the left to start reading them, or click the "synchronize" button to re-sync with FamilySearch. Last synchronized ${lastSyncStart.toLocaleString()}`
+  return i18n.completeSync(lastSyncStart);
 }
 
 const WelcomeMessage = ({stories, location, syncStatus, lastSync, lastSyncStart, ctx}) => (
@@ -82,11 +84,11 @@ const LoggedOutWelcome = ({login, loginStatus}) => (
   <View style={styles.container}>
     <View style={styles.inner}>
     <Text style={styles.title}>
-      Welcome to <Logo/>!
+      {i18n.welcome(<Logo/>)}
     </Text>
     <Tagline/>
     <Text style={styles.message}>
-      Just click the button below to login with FamilySearch, and then you can synchronize and download the stories of your direct ancestors and their siblings back 9 generations.
+      {i18n.startSyncing}
     </Text>
     <Button style={styles.loginButton} onClick={login}>Login!</Button>
     </View>

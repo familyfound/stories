@@ -141,7 +141,9 @@ class Searcher extends EventEmitter {
     if (numDown < this.config.maxDown) {
       relatives.childIds.forEach(childId => {
         const child = relatives.persons[childId]
-        this.addRelative(child, 'child', trail, numUp, numDown + 1)
+        if (child) {
+          this.addRelative(child, 'child', trail, numUp, numDown + 1)
+        }
       })
     }
 
@@ -155,10 +157,10 @@ class Searcher extends EventEmitter {
         parents: relatives.parents.map(
           ({mother, father}) => ({mother: mother && mother.id, father: father && father.id})
         ),
-        children: relatives.childIds.map(id => ({
+        children: relatives.childIds.map(id => relatives.persons[id] && ({
           pid: id,
           display: relatives.persons[id].display,
-        }))
+        })).filter(x => !!x)
       })
     }
 
