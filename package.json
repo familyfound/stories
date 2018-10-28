@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "babel-node server.js",
+    "server": "http-server .",
     "deploy": "rm -f static/build-* && node build.js && surge -d stories.familyfoundapp.com ."
   },
   "author": "",
