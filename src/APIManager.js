@@ -105,9 +105,17 @@ export default class APIManager {
   }
 
   personWithRelationships(pid) {
-    return this.get(`/platform/tree/persons-with-relationships?person=${pid}&persons=`)
-      .then(data => assembleRelatives(pid, data))
+    return this.get(`/platform/tree/persons/${pid}/families`)
+      .then(data => {
+        console.log('person with relationships', data)
+        return assembleRelatives(pid, data)
+      })
   }
+
+  // personWithRelationships(pid) {
+  //   return this.get(`/platform/tree/persons-with-relationships?person=${pid}&persons=`)
+  //     .then(data => assembleRelatives(pid, data))
+  // }
 
   placeByName(name) {
     return this.get(`/platform/places/search?q=name:${encodeURIComponent(name)}`)
