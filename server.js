@@ -1,11 +1,11 @@
-#!/usr/bin/env babel-node
-import path from 'path'
-import express from 'express'
-import webpack from 'webpack'
-import config from './webpack.config'
-import mid from 'webpack-dev-middleware'
-import hot from 'webpack-hot-middleware'
-import fs from 'fs'
+#!/usr/bin/env node
+const path = require('path');
+const express = require('express');
+const webpack = require('webpack');
+const config = require('./webpack.config');
+const mid = require('webpack-dev-middleware');
+const hot = require('webpack-hot-middleware');
+const fs = require('fs');
 
 const app = express()
 const compiler = webpack(config)
@@ -24,7 +24,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.dev.html'))
 })
 
-const PORT = process.env.PORT || 7200
+// note, must be run with sudo
+const PORT = 80//process.env.PORT || 7200
 
 app.listen(PORT, 'localhost', err => {
   if (err) {
