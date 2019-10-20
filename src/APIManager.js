@@ -46,10 +46,12 @@ export default class APIManager {
     if (!url.match(/^https?:\/\//)) {
       url = this.config.apiBase + url
     }
+    // Ok
     return get(method, url, {
       'Content-type': 'application/json',
       Authorization: 'Bearer ' + (token || this.token),
       Accept: 'application/x-fs-v1+json,application/json',
+      // "X-FS-Feature-Tag": "generic.relationship.terms",
     }, body, type)
   }
 
