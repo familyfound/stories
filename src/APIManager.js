@@ -1,11 +1,29 @@
+// @flow
 
 import Syncer from './Syncer'
 import makeCache from './Cache'
-import assembleRelatives from './assembleRelatives'
+import assembleRelatives, {type Relatives} from './assembleRelatives'
 import get from './util/get'
 
+type Config = {
+  apiBase: string,
+  identBase: string,
+  clientId: string,
+}
+
 export default class APIManager {
-  constructor(config) {
+  config: Config
+  get: any
+  cache: {
+    remove: (section: string, key: string) => void,
+    personWithRelationships: (pid: string) => Relatives,
+  }
+  syncer: Syncer
+  user: ?{
+    personId: string,
+  }
+  token: ?string
+  constructor(config: Config) {
     this.config = config
     this.get = this.send.bind(this, 'GET')
     this.cache = makeCache(this, [
@@ -21,12 +39,14 @@ export default class APIManager {
     })
   }
 
-  resetForPerson(pid) {
+  resetForPerson(pid: string) {
     this.cache.remove('recordHints', pid)
     // TODO dive into the sources too
     this.cache.remove('sources', pid)
     const promise = this.cache.personWithRelationships(pid)
+    // $FlowIgnore bluebird promises
     if (promise.isFulfilled()) {
+      // $FlowIgnore bluebird promises
       const {parentIds, childIds} = promise.value()
       parentIds.forEach(id => this.cache.remove('personWithRelationships', id))
       // TODO remove children of the parents, and the children
@@ -35,6 +55,9 @@ export default class APIManager {
   }
 
   startSyncing() {
+    if (!this.user) {
+      throw new Error('Cannot start syncing without a user');
+    }
     this.syncer.start(this.user.personId)
   }
 
@@ -42,14 +65,18 @@ export default class APIManager {
     this.syncer.stop()
   }
 
-  send(method, url, body, type, token) {
+  send<T>(method: 'GET' | 'POST', url: string, body: string, type: string, token?: string): Promise<T> {
     if (!url.match(/^https?:\/\//)) {
       url = this.config.apiBase + url
+    }
+    const authToken = token || this.token;
+    if (!authToken) {
+      return Promise.reject(new Error('Cannot make a request without an auth token'))
     }
     // Ok
     return get(method, url, {
       'Content-type': 'application/json',
-      Authorization: 'Bearer ' + (token || this.token),
+      Authorization: 'Bearer ' + authToken,
       Accept: 'application/x-fs-v1+json,application/json',
       // "X-FS-Feature-Tag": "generic.relationship.terms",
     }, body, type)
@@ -63,24 +90,26 @@ export default class APIManager {
     window.location = `${this.config.identBase}/cis-web/oauth2/v3/authorization?response_type=code&client_id=${this.config.clientId}&redirect_uri=${redirect}`
   }
 
-  async loginWithCode(code) {
+  async loginWithCode(code: string) {
     const body = `grant_type=authorization_code&client_id=${this.config.clientId}&code=${code}`
-    const result = await get('POST', this.config.identBase + '/cis-web/oauth2/v3/token', {
+    const {access_token}: {
+      access_token: ?string,
+    } = await get('POST', this.config.identBase + '/cis-web/oauth2/v3/token', {
       'Content-type': 'application/x-www-form-urlencoded',
       Accept: 'application/x-fs-v1+json,application/json',
     }, body)
-    if (result.access_token) {
-      localStorage.token = result.access_token
-      return await this.checkToken(result.access_token)
+    if (access_token) {
+      localStorage.setItem('token', access_token);
+      return await this.checkToken(access_token)
     }
   }
 
   logOut() {
-    delete localStorage.token
+    localStorage.removeItem('token');
     this.user = null
   }
 
-  async checkToken(token) {
+  async checkToken(token: string) {
     try {
       this.user = await this.getUser(token)
     } catch (e) {
@@ -93,7 +122,7 @@ export default class APIManager {
     return true
   }
 
-  getUser(token) {
+  getUser(token: string) {
     return this.get('/platform/users/current', null, 'json', token)
       .then(data => {
         if (data.errors) {
@@ -106,7 +135,7 @@ export default class APIManager {
       })
   }
 
-  personWithRelationships(pid) {
+  personWithRelationships(pid: string) {
     return this.get(`/platform/tree/persons/${pid}/families`)
       .then(data => {
         console.log('person with relationships', data)
@@ -119,26 +148,26 @@ export default class APIManager {
   //     .then(data => assembleRelatives(pid, data))
   // }
 
-  placeByName(name) {
+  placeByName(name: string) {
     return this.get(`/platform/places/search?q=name:${encodeURIComponent(name)}`)
       .then(data => data.entries.length && data.entries[0].content.gedcomx.places[0])
   }
 
-  memories(pid) {
+  memories(pid: string) {
     return this.get(`/platform/tree/persons/${pid}/memories`)
       .then(data => unPageMemories(this, data))
   }
 
-  stories(pid) {
+  stories(pid: string) {
     // TODO support 'application/pdf'
     return this.memories(pid).filter(memory => memory.mediaType.match(/text\/plain/))
   }
 
-  story(url) {
+  story(url: string) {
     return this.get(url, null, 'text')
   }
 
-  portraitURL(pid) {
+  portraitURL(pid: string) {
     return `${this.config.apiBase}/platform/tree/persons/${pid}/portrait`
   }
 }

@@ -5,12 +5,13 @@ import assembleRelatives from "./assembleRelatives";
 import findReasons from "./findReasons";
 import calcRelation from "./util/calcRelation";
 
-// import type {Person} from './api-types'
+import type {DisplayProperties} from './api-types'
+import ApiManager from './APIManager'
 import type {Relatives, PersonWithMeta as Person} from './assembleRelatives'
 
 const countWords = text => text.split(/\s+/g).length;
 
-type TrailItem = {
+export type TrailItem = {
   rel: string,
   id: string,
   name: string,
@@ -30,6 +31,14 @@ type TrailItem = {
 //   }
 // };
 
+type StoryPerson = {
+  pid: string,
+  trail: Array<TrailItem>,
+  display: DisplayProperties,
+  relation: string,
+  href: string,
+}
+
 type WorkItem = {
   pid: string,
   trail: Array<TrailItem>,
@@ -37,19 +46,24 @@ type WorkItem = {
   numDown: number
 };
 
-type Api = any;
+type Api = ApiManager;
 type Frontier = Array<WorkItem>;
-type Config = any;
+type Config = {
+  maxWorkers: number,
+  maxUp: number,
+  maxDown: number,
+  maxTotal: number,
+};
 
 class Searcher extends EventEmitter {
-  api: any;
+  api: ApiManager;
   frontier: Frontier;
-  storyIds: { [key: string]: any };
-  searched: { [key: string]: any };
+  storyIds: { [key: string]: boolean };
+  searched: { [key: string]: boolean };
   config: Config;
   running: boolean;
   working: number;
-  max: number;
+  max: ?number;
   total: number;
   foundThisTime: number;
   constructor(api: Api, frontier: Frontier, config: Config) {
@@ -63,7 +77,7 @@ class Searcher extends EventEmitter {
     this.total = 0;
   }
 
-  start(base: string, max: number) {
+  start(base: string, max?: number) {
     if ((base && !this.frontier) || !this.frontier.length) {
       this.frontier = [{ pid: base, trail: [], numUp: 0, numDown: 0 }];
     }
@@ -77,7 +91,7 @@ class Searcher extends EventEmitter {
     }
   }
 
-  stop(completed: boolean) {
+  stop(completed?: boolean) {
     if (!this.running) return;
     this.running = false;
     this.emit("stop", !!completed);
@@ -176,7 +190,7 @@ class Searcher extends EventEmitter {
   }
 
   async processItem({ pid, trail, numUp, numDown }: WorkItem) {
-    const relatives = await this.api.cache.personWithRelationships(pid);
+    const relatives: Relatives = await this.api.cache.personWithRelationships(pid);
     const person = relatives.person;
 
     this.evaulate({ pid, trail, numUp, numDown }, relatives);

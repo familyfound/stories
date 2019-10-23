@@ -1,3 +1,5 @@
+// @flow
+import type {TrailItem} from '../Syncer'
 
 const backPrefix = num => {
   if (num === 0) return 'You'
@@ -24,14 +26,14 @@ const cousinPrefix = num => {
   return num + 'th'
 }
 
-const calcRelation = (trail, numUp, numDown, possessive = 'Your') => {
+const calcRelation = (trail: Array<TrailItem>, numUp: number, numDown: number, possessive: string = 'Your') => {
   if (!trail.length) return 'You'
   const side = trail[0].rel
-  const lastUpRel = numUp > 1 && trail[numUp - 1].rel
+  if (!numDown && numUp === 1) {
+    return `${possessive} ${side}`
+  }
+  const lastUpRel = trail[numUp - 1].rel
   if (!numDown) {
-    if (numUp === 1) {
-      return `${possessive} ${side}`
-    }
     if (numUp === 2) {
       return `${possessive} ${side}'s ${trail[1].rel}`
     }
