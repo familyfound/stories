@@ -1,13 +1,18 @@
+// @flow
 
-import {EventEmitter} from 'events'
+import EventEmitter from 'events'
 import assembleRelatives from './assembleRelatives'
 import findReasons from './findReasons'
 import calcRelation from './util/calcRelation'
 
 const countWords = text => text.split(/\s+/g).length
 
+type Api = any;
+type Frontier = any;
+type Config = any;
+
 class Searcher extends EventEmitter {
-  constructor(api, frontier, config) {
+  constructor(api: Api, frontier: Frontier, config: Config) {
     super()
     this.api = api
     this.frontier = frontier && frontier.slice()

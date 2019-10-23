@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
+    "open": "open http://stories.local",
     "server": "http-server .",
     "deploy": "rm -f static/build-* && node build.js && surge -d stories.familyfoundapp.com ."
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "*",
+    "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.6.3",
     "babel-loader": "*",
     "eslint": "1.8.0",

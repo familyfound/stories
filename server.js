@@ -24,8 +24,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.dev.html'))
 })
 
-// note, must be run with sudo
-const PORT = 80//process.env.PORT || 7200
+const PORT = process.env.PORT || 7200
 
 app.listen(PORT, 'localhost', err => {
   if (err) {
