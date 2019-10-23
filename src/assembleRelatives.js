@@ -1,3 +1,4 @@
+// @flow
 
 const COUPLE_TYPE = "http://gedcomx.org/Couple"
 const UNKNOWN = 'UNKNOWN'
@@ -20,12 +21,47 @@ const getDateYear = formal => {
   return match ? parseInt(match[0]) : null
 }
 
-export default (pid, {relationships = [], childAndParentsRelationships = [], persons}) => {
-  const families = {}
+import type {Person} from './api-types'
+
+export type PersonWithMeta = {...Person, display: {...$PropertyType<Person, 'display'>, meta: Meta}}
+
+export type Family = {
+  spouse: ?PersonWithMeta,
+  mother?: ?PersonWithMeta,
+  father?: ?PersonWithMeta,
+  children: Array<PersonWithMeta>,
+  marriage?: {date: ?string, year: ?number, place: ?string}
+}
+
+export type Relatives = {
+  families: {[spouseId: string]: Family},
+  parents: Array<{
+    father: PersonWithMeta,
+    mother: PersonWithMeta,
+  }>,
+  parentIds: Array<string>,
+  childIds: Array<string>,
+  persons: {[personId: string]: PersonWithMeta},
+  person: PersonWithMeta,
+}
+
+type FamiliesApiResponse = {
+  relationships: Array<{
+    type: string,
+    facts: Array<any>,
+    person1: {resourceId: string},
+    person2: {resourceId: string},
+  }>,
+  childAndParentsRelationships: Array<any>,
+  persons: Array<Person>,
+}
+
+export default (pid: string, {relationships = [], childAndParentsRelationships = [], persons: personsArray}: FamiliesApiResponse) => {
+  const families: {[key: string]: Family} = {}
   const parents = []
   const parentIds = []
   const childIds = []
-  persons = persons.reduce((obj, person) => (person.id !== UNKNOWN && (obj[person.id] = addMeta(person)), obj), {})
+  const persons: {[key: string]: PersonWithMeta} = personsArray.reduce((obj, person) => (person.id !== UNKNOWN && (obj[person.id] = addMeta(person)), obj), {})
   const person = persons[pid]
 
   // Couple relationships
@@ -92,11 +128,13 @@ export default (pid, {relationships = [], childAndParentsRelationships = [], per
   return {families, parents, parentIds, childIds, persons, person: persons[pid]}
 }
 
-const addMeta = (person) => {
+const addMeta = (person: Person): ?PersonWithMeta => {
   if (!person.display) {
     return null
   }
+  // $FlowFixMe
   person.display.meta = getMeta(person.display)
+  // $FlowFixMe
   return person
 }
 
@@ -107,11 +145,12 @@ const estimateMeta = (person, families) => {
     return ofind(families, family => {
       const birthYears = family.children
         .map(child => getMeta(child.display).age)
-        .filter(age => age !== false)
+        .filter(age => age != null)
       if (!birthYears.length) {
         return null
       }
-      const oldest = Math.min(birthYears)
+       // $FlowFixMe
+      const oldest = Math.min(...birthYears)
       return {
         age: 40,
         born: oldest - 20,
@@ -126,7 +165,16 @@ const estimateMeta = (person, families) => {
   return meta
 }
 
-export const getMeta = ({birthDate, lifespan}) => {
+export type Meta = {
+  born: ?number,
+  died: ?number,
+  age: ?number,
+  estimatedBirth: boolean,
+  estimatedDeath: boolean,
+  estimated: boolean,
+}
+
+export const getMeta = ({birthDate, lifespan}: {birthDate: ?string, lifespan: string}): Meta => {
   const parts = lifespan.split('-')
   if (parts.length !== 2) {
     return {
@@ -167,7 +215,7 @@ export const getMeta = ({birthDate, lifespan}) => {
 const ofind = (o, fn) => {
   const keys = Object.keys(o)
   for (let i=0; i<keys.length; i++) {
-    const res = fn(o[keys[i]], keys[i])
+    const res = fn(o[keys[i]])
     if (res) return res
   }
   return null
