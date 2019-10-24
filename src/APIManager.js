@@ -2,8 +2,9 @@
 
 import Syncer from './Syncer'
 import makeCache from './Cache'
-import assembleRelatives, {type Relatives} from './assembleRelatives'
+import assembleRelatives, {type Relatives, type FamiliesApiResponse} from './assembleRelatives'
 import get from './util/get'
+import type {MemoriesResponse, Story, User} from './api-types'
 
 type Config = {
   apiBase: string,
@@ -13,24 +14,23 @@ type Config = {
 
 export default class APIManager {
   config: Config
-  get: any
   cache: {
     remove: (section: string, key: string) => void,
-    personWithRelationships: (pid: string) => Relatives,
+    personWithRelationships: (pid: string) => Promise<Relatives>,
+    stories: (pid: string) => Promise<Array<Story>>,
+    story: (url: string) => Promise<string>,
   }
   syncer: Syncer
-  user: ?{
-    personId: string,
-  }
+  user: ?User
   token: ?string
   constructor(config: Config) {
     this.config = config
-    this.get = this.send.bind(this, 'GET')
+    // this.get = this.send.bind(this, 'GET')
     this.cache = makeCache(this, [
       'personWithRelationships',
       'stories',
       'story',
-    ])
+    ]);
     this.syncer = new Syncer(this, [], {
       maxUp: 7,
       maxDown: 1,
@@ -65,7 +65,7 @@ export default class APIManager {
     this.syncer.stop()
   }
 
-  send<T>(method: 'GET' | 'POST', url: string, body: string, type: string, token?: string): Promise<T> {
+  send<T>(method: 'GET' | 'POST', url: string, body?: ?string, type?: string, token?: string): Promise<T> {
     if (!url.match(/^https?:\/\//)) {
       url = this.config.apiBase + url
     }
@@ -122,8 +122,8 @@ export default class APIManager {
     return true
   }
 
-  getUser(token: string) {
-    return this.get('/platform/users/current', null, 'json', token)
+  getUser(token: string): Promise<User> {
+    return this.send('GET', '/platform/users/current', null, 'json', token)
       .then(data => {
         if (data.errors) {
           throw new Error('Errors! ' + JSON.stringify(data.errors))
@@ -136,8 +136,8 @@ export default class APIManager {
   }
 
   personWithRelationships(pid: string) {
-    return this.get(`/platform/tree/persons/${pid}/families`)
-      .then(data => {
+    return this.send('GET', `/platform/tree/persons/${pid}/families`)
+      .then((data: FamiliesApiResponse) => {
         console.log('person with relationships', data)
         return assembleRelatives(pid, data)
       })
@@ -149,22 +149,22 @@ export default class APIManager {
   // }
 
   placeByName(name: string) {
-    return this.get(`/platform/places/search?q=name:${encodeURIComponent(name)}`)
+    return this.send('GET', `/platform/places/search?q=name:${encodeURIComponent(name)}`)
       .then(data => data.entries.length && data.entries[0].content.gedcomx.places[0])
   }
 
-  memories(pid: string) {
-    return this.get(`/platform/tree/persons/${pid}/memories`)
-      .then(data => unPageMemories(this, data))
+  memories(pid: string): Promise<Array<Story>> {
+    return this.send('GET', `/platform/tree/persons/${pid}/memories`)
+      .then((data: MemoriesResponse) => unPageMemories(this, data))
   }
 
-  stories(pid: string) {
+  stories(pid: string): Promise<Array<Story>> {
     // TODO support 'application/pdf'
-    return this.memories(pid).filter(memory => memory.mediaType.match(/text\/plain/))
+    return this.memories(pid).then(memories => memories.filter(memory => memory.mediaType.match(/text\/plain/)))
   }
 
-  story(url: string) {
-    return this.get(url, null, 'text')
+  story(url: string): Promise<string> {
+    return this.send('GET', url, null, 'text')
   }
 
   portraitURL(pid: string) {
@@ -172,17 +172,18 @@ export default class APIManager {
   }
 }
 
-const unPageMemories = async (api, data) => {
+const unPageMemories = async (api: APIManager, data: MemoriesResponse) => {
   if (!data) return []
   const stories = data.sourceDescriptions
-  const ids = stories.reduce((obj, story) => (obj[story.id] = true, obj), {})
+  const ids: {[key: string]: boolean} = stories.reduce((obj, story) => (obj[story.id] = true, obj), {})
   if (!data.links.last) return stories
   const last = data.links.last.href
   while (data.links.next && data.links.last && data.links.last.href === last && data.links.self.href !== last) {
-    data = await api.get(data.links.next.href)
-    if (!data) {
+    let nextData: ?MemoriesResponse = await api.send('GET', data.links.next.href)
+    if (!nextData) {
       break
     }
+    data = nextData;
     data.sourceDescriptions.forEach(story => {
       if (ids[story.id]) {
         return

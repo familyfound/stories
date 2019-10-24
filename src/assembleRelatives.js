@@ -45,7 +45,7 @@ export type Relatives = {
   person: PersonWithMeta,
 }
 
-type FamiliesApiResponse = {
+export type FamiliesApiResponse = {
   relationships: Array<{
     type: string,
     facts: Array<any>,

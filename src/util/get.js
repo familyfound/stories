@@ -5,7 +5,7 @@
 import BluebirdPromise from 'bluebird'
 BluebirdPromise.config({cancellation: true})
 
-export default function<T>(method: 'GET' | 'POST', url: string, headers: {[key: string]: string}, body: string, type: string='json'): Promise<T> {
+export default function<T>(method: 'GET' | 'POST', url: string, headers: {[key: string]: string}, body: ?string, type: string='json'): Promise<T> {
   return new BluebirdPromise((resolve, reject, onCancel) => {
     const xhr = new XMLHttpRequest()
     xhr.open(method, url)
