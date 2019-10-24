@@ -1,4 +1,4 @@
-
+// @flow
 import APIManager from './APIManager'
 import config from '../_config'
 

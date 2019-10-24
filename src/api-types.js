@@ -65,7 +65,18 @@ export type Note = {
   id: string // A local, context-specific id for the data.
 };
 
-export type Story = SourceDescription;
+import type {EmitPerson} from './Syncer'
+
+export type EmitStory = {
+    ...SourceDescription,
+    text: ?string,
+    words: number,
+    archived: ?number,
+    starred: boolean,
+    title: string,
+    dateAdded: Date,
+    people: Array<EmitPerson>,
+};
 
 export type SourceDescription = {
   // citations: Array<SourceCitation>, // The bibliographic citations for this source.

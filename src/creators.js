@@ -18,20 +18,21 @@ export const logOut = () => {
   return {type: 'logOut'}
 }
 
-export const startSyncing = val => {
+export const startSyncing = () => {
   api.startSyncing()
   const started = new Date()
   db.setLastSyncStart(started)
   return {type: 'startSyncing', args: {started}}
 }
 
-export const stopSyncing = completed => {
+export const stopSyncing = (completed: boolean) => {
   api.stopSyncing()
+  let completedTime: ?Date = null;
   if (completed) {
-    completed = new Date()
-    db.setLastSync(completed)
+    completedTime = new Date()
+    db.setLastSync(completedTime)
   }
-  return {type: 'stopSyncing', args: {completed}}
+  return {type: 'stopSyncing', args: {completed: completedTime}}
 }
 
 export const setSyncStatus = status => ({

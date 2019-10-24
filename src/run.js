@@ -1,3 +1,4 @@
+// @flow
 
 import React from 'react'
 import {render} from 'react-dom'
@@ -11,6 +12,9 @@ import Store from './Store'
 import history from './history'
 import api from './api'
 import db from './db'
+
+import type {EmitPerson} from './Syncer'
+import type {EmitStory} from './api-types'
 
 import debug from './debug'
 
@@ -33,7 +37,7 @@ const getInitialLoginStatus = (
       history.replaceState(null, '/')
       return await api.loginWithCode(code)
     }
-    const token = localStorage.token
+    const token = localStorage.getItem('token')
     if (!token) {
       return false
     }
@@ -46,17 +50,19 @@ window.api = api
 window.db = db
 window.React = React
 
+import type {DbState, State, Action} from './types'
+
 const main = async () => {
   // TODO show loading screen or something. takes half a second to verify
   // login
   // TODO could I just show a completely different database based on the
   // logged-in user? hmmmm
   const loginStatus = await getInitialLoginStatus()
-  if (loginStatus) {
+  if (loginStatus && api.user) {
     await db.init(api.user.personId)
   }
-  const dbState = await db.getState()
-  const store = window.store = new Store({
+  const dbState: DbState = await db.getState()
+  const store: Store<State, Action> = window.store = new Store({
     ...dbState,
     loginStatus,
     user: api.user,
@@ -75,7 +81,7 @@ const main = async () => {
     }
     console.log(total, display.name)
   })
-  api.syncer.on('story', story => {
+  api.syncer.on('story', (story: EmitStory) => {
     if (store.state.stories[story.id]) {
       const people = [...store.state.stories[story.id].people]
       const pids = people.map(p => p.pid)
@@ -91,7 +97,7 @@ const main = async () => {
       actions.addStory(story)
     }
   })
-  api.syncer.on('person', person => {
+  api.syncer.on('person', (person: EmitPerson) => {
     actions.addPerson(person)
   })
   api.syncer.on('stop', completed => actions.stopSyncing(completed))
@@ -101,9 +107,13 @@ const main = async () => {
 }
 
 const renderMain = (store, actions) => {
+  const root = document.getElementById('root');
+  if (!root) {
+    throw new Error('No root node')
+  }
   render(
     makeRouter(store, api, actions, db, history),
-    document.getElementById('root')
+    root
   )
 }
 

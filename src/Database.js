@@ -2,6 +2,14 @@ import PromiseObj from './util/PromiseObj'
 
 const NOT_INITIALIZED = Symbol('Database not initialized!')
 
+export type DbState = {
+  hasStarted: boolean,
+  lastSync: ?number,
+  lastSyncStart: ?number,
+  people: {[key: string]: Person},
+  stories: {[key: string]: Story},
+}
+
 export default class Database {
   constructor() {
     this._db = NOT_INITIALIZED

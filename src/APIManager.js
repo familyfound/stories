@@ -4,9 +4,9 @@ import Syncer from './Syncer'
 import makeCache from './Cache'
 import assembleRelatives, {type Relatives, type FamiliesApiResponse} from './assembleRelatives'
 import get from './util/get'
-import type {MemoriesResponse, Story, User} from './api-types'
+import type {MemoriesResponse, SourceDescription as Story, User} from './api-types'
 
-type Config = {
+export type Config = {
   apiBase: string,
   identBase: string,
   clientId: string,

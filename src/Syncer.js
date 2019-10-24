@@ -20,6 +20,21 @@ export type TrailItem = {
   place: ?string
 };
 
+export type EmitPerson = {
+  pid: string,
+  display: DisplayProperties,
+  trail: Array<TrailItem>,
+  relation: string,
+  parents: Array<{
+    mother: ?string,
+    father: ?string,
+  }>,
+  children: Array<{
+    pid: string,
+    display: DisplayProperties
+  }>
+}
+
 // type Person = {
 //   id: string,
 //   display: {
@@ -31,7 +46,7 @@ export type TrailItem = {
 //   }
 // };
 
-type StoryPerson = {
+export type StoryPerson = {
   pid: string,
   trail: Array<TrailItem>,
   display: DisplayProperties,
