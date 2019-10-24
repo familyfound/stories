@@ -2,6 +2,8 @@
 
 import type {User, DisplayProperties, SourceDescription} from './api-types'
 
+export type LoginStatus = string;
+
 export type EmitStory = {
     ...SourceDescription,
     text: ?string,
@@ -10,7 +12,7 @@ export type EmitStory = {
     starred: boolean,
     title: string,
     dateAdded: Date,
-    people: Array<EmitPerson>,
+    people: Array<StoryPerson>,
 };
 
 export type TrailItem = {
@@ -70,6 +72,8 @@ export type SyncStatus = false | {
 export type Action = {
     type: 'getStarted'
 } | {
+    type: 'logOut'
+} | {
     type: 'setLoggedIn',
     args: {loginStatus: string, user: ?User}
 } | {
@@ -84,6 +88,9 @@ export type Action = {
 } | {
     type: 'setSearchText',
     args: {searchText: string}
+} | {
+    type: 'setStarred',
+    args: {id: string, starred: boolean}
 } | {
     type: 'setArchived',
     args: {id: string, archived: ?number}

@@ -1,6 +1,9 @@
+// @flow
+import Store from './Store'
 
-export default (creators, store) => {
-  const actions = {}
+export default <T: Object, State, Action>(creators: T, store: Store<State, Action>): T => {
+  // $FlowIgnore
+  const actions: T = {}
   Object.keys(creators).forEach(name => {
     actions[name] = (...args) => {
       const action = creators[name](...args, store.state)
