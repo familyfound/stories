@@ -1,7 +1,49 @@
 // @flow
 
-import type {EmitPerson, StoryPerson} from './Syncer'
-import type {EmitStory, User, DisplayProperties} from './api-types'
+import type {User, DisplayProperties, SourceDescription} from './api-types'
+
+export type EmitStory = {
+    ...SourceDescription,
+    text: ?string,
+    words: number,
+    archived: ?number,
+    starred: boolean,
+    title: string,
+    dateAdded: Date,
+    people: Array<EmitPerson>,
+};
+
+export type TrailItem = {
+  rel: string,
+  id: string,
+  name: string,
+  gender: string,
+  lifespan: ?string,
+  place: ?string
+};
+
+export type EmitPerson = {
+  pid: string,
+  display: DisplayProperties,
+  trail: Array<TrailItem>,
+  relation: string,
+  parents: Array<{
+    mother: ?string,
+    father: ?string,
+  }>,
+  children: Array<{
+    pid: string,
+    display: DisplayProperties
+  }>
+}
+
+export type StoryPerson = {
+  pid: string,
+  trail: Array<TrailItem>,
+  display: DisplayProperties,
+  relation: string,
+  href: string,
+}
 
 export type DbState = {
   hasStarted: boolean,

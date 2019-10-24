@@ -13,8 +13,7 @@ import history from './history'
 import api from './api'
 import db from './db'
 
-import type {EmitPerson} from './Syncer'
-import type {EmitStory} from './api-types'
+import type {EmitPerson, EmitStory} from './types'
 
 import debug from './debug'
 

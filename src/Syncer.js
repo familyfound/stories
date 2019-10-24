@@ -5,35 +5,12 @@ import assembleRelatives from "./assembleRelatives";
 import findReasons from "./findReasons";
 import calcRelation from "./util/calcRelation";
 
+import type {EmitPerson, StoryPerson, TrailItem} from './types'
 import type {DisplayProperties} from './api-types'
 import ApiManager from './APIManager'
 import type {Relatives, PersonWithMeta as Person} from './assembleRelatives'
 
 const countWords = text => text.split(/\s+/g).length;
-
-export type TrailItem = {
-  rel: string,
-  id: string,
-  name: string,
-  gender: string,
-  lifespan: ?string,
-  place: ?string
-};
-
-export type EmitPerson = {
-  pid: string,
-  display: DisplayProperties,
-  trail: Array<TrailItem>,
-  relation: string,
-  parents: Array<{
-    mother: ?string,
-    father: ?string,
-  }>,
-  children: Array<{
-    pid: string,
-    display: DisplayProperties
-  }>
-}
 
 // type Person = {
 //   id: string,
@@ -45,14 +22,6 @@ export type EmitPerson = {
 //     deathPlace: ?string
 //   }
 // };
-
-export type StoryPerson = {
-  pid: string,
-  trail: Array<TrailItem>,
-  display: DisplayProperties,
-  relation: string,
-  href: string,
-}
 
 type WorkItem = {
   pid: string,

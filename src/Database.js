@@ -1,21 +1,17 @@
+// @flow
 import PromiseObj from './util/PromiseObj'
+import type {EmitStory, StoryPerson, EmitPerson} from './types'
+import type {DbState} from './types'
 
-const NOT_INITIALIZED = Symbol('Database not initialized!')
-
-export type DbState = {
-  hasStarted: boolean,
-  lastSync: ?number,
-  lastSyncStart: ?number,
-  people: {[key: string]: Person},
-  stories: {[key: string]: Story},
-}
+declare var Dexie;
 
 export default class Database {
+  _db: ?Dexie
   constructor() {
-    this._db = NOT_INITIALIZED
+    this._db = null
   }
 
-  init(userId) {
+  init(userId: string): Promise<void> {
     const db = this._db = new Dexie('all-the-stories:' + userId)
     db.version(1).stores({
       settings: 'id',
@@ -26,26 +22,27 @@ export default class Database {
     return db.open()
   }
 
-  getState() {
-    if (this._db === NOT_INITIALIZED) {
-      return {
+  getState(): Promise<DbState> {
+    const {_db} = this;
+    if (!_db) {
+      return Promise.resolve({
         hasStarted: false,
         lastSync: null,
         lastSyncStart: null,
         people: {},
         stories: {},
-      }
+      })
     }
     return PromiseObj({
-      hasStarted: this._db.settings.get('hasStarted').then(val => val ? true : false),
-      lastSync: this._db.settings.get('lastSync').then(val => val ? val.date : null),
-      lastSyncStart: this._db.settings.get('lastSyncStart').then(val => val ? val.date : null),
-      people: this._db.people.toArray()
+      hasStarted: _db.settings.get('hasStarted').then(val => val ? true : false),
+      lastSync: _db.settings.get('lastSync').then(val => val ? val.date : null),
+      lastSyncStart: _db.settings.get('lastSyncStart').then(val => val ? val.date : null),
+      people: _db.people.toArray()
         .then(val => (val || []).reduce(
           (obj, item) => (obj[item.pid] = item, obj),
           {}
         )),
-      stories: this._db.stories.orderBy('dateAdded').toArray()
+      stories: _db.stories.orderBy('dateAdded').toArray()
         .then(val => (val || []).reduce(
           (obj, item) => (obj[item.id] = item, obj),
           {}
@@ -53,39 +50,48 @@ export default class Database {
     })
   }
 
-  setStarted() {
+  setStarted(): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
     return this._db.settings.put({id: 'hasStarted', date: new Date()})
   }
 
-  addStory(item) {
+  addStory(item: EmitStory): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
     return this._db.stories.put(item)
   }
 
-  addPerson(person) {
+  addPerson(person: EmitPerson): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
     return this._db.people.put(person)
   }
 
-  removeStory(pid) {
+  removeStory(pid: string): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
     return this._db.stories.delete(pid)
   }
 
-  setStoryPeople(id, people) {
+  setStoryPeople(id: string, people: Array<StoryPerson>): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
     return this._db.stories.update(id, {people})
   }
 
-  setArchived(id, archived) {
+  setArchived(id: string, archived: ?number): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
     return this._db.stories.update(id, {archived})
   }
 
-  setStarred(id, starred) {
+  setStarred(id: string, starred: boolean): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
     return this._db.stories.update(id, {starred})
   }
 
-  setLastSyncStart(date) {
-    this._db.settings.put({id: 'lastSyncStart', date})
+  setLastSyncStart(date: Date): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
+    return this._db.settings.put({id: 'lastSyncStart', date}).then(() => null)
   }
 
-  setLastSync(date) {
-    this._db.settings.put({id: 'lastSync', date})
+  setLastSync(date: Date): Promise<void> {
+    if (!this._db) return Promise.reject('Not initialized')
+    return this._db.settings.put({id: 'lastSync', date}).then(() => null)
   }
 }

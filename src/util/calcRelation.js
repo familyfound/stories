@@ -1,5 +1,5 @@
 // @flow
-import type {TrailItem} from '../Syncer'
+import type {TrailItem} from '../types'
 
 const backPrefix = num => {
   if (num === 0) return 'You'
