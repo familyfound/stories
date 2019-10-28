@@ -2,9 +2,9 @@
 
 import Syncer from './Syncer'
 import makeCache from './Cache'
-import assembleRelatives, {type Relatives, type FamiliesApiResponse} from './assembleRelatives'
+import assembleRelatives, {type Relatives} from './assembleRelatives'
 import get from './util/get'
-import type {MemoriesResponse, SourceDescription as Story, User} from './api-types'
+import type {MemoriesResponse, SourceDescription as Story, User, FamiliesApiResponse} from './api-types'
 
 export type Config = {
   apiBase: string,
@@ -78,7 +78,7 @@ export default class APIManager {
       'Content-type': 'application/json',
       Authorization: 'Bearer ' + authToken,
       Accept: 'application/x-fs-v1+json,application/json',
-      // "X-FS-Feature-Tag": "generic.relationship.terms",
+      "X-FS-Feature-Tag": "generic.relationship.terms",
     }, body, type)
   }
 

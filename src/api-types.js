@@ -5,9 +5,26 @@ export type ResourceReference = {
   resource: string
 };
 
+export type FamiliesApiResponse = {
+  relationships: Array<{
+    type: string,
+    facts: Array<any>,
+    person1: {resourceId: string},
+    person2: {resourceId: string},
+  }>,
+  childAndParentsRelationships: Array<{
+    // father: {resourceId: string},
+    // mother: {resourceId: string},
+    parent1: {resourceId: string},
+    parent2: {resourceId: string},
+    child: {resourceId: string},
+  }>,
+  persons: Array<Person>,
+}
+
 export type FamilyView = {
-  parent1: ResourceReference, // A reference to a parent in the family. The name "parent1" is used only to distinguish it from the other parent in this family and implies neither order nor role.
-  parent2: ResourceReference, // A reference to a parent in the family. The name "parent2" is used only to distinguish it from the other parent in this family and implies neither order nor role.
+  father: ResourceReference, // A reference to a parent in the family. The name "parent1" is used only to distinguish it from the other parent in this family and implies neither order nor role.
+  mother: ResourceReference, // A reference to a parent in the family. The name "parent2" is used only to distinguish it from the other parent in this family and implies neither order nor role.
   children: Array<ResourceReference> // A list of references to the children of this family.
 };
 

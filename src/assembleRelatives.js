@@ -21,7 +21,7 @@ const getDateYear = formal => {
   return match ? parseInt(match[0]) : null
 }
 
-import type {Person} from './api-types'
+import type {Person, FamiliesApiResponse} from './api-types'
 
 export type PersonWithMeta = {...Person, display: {...$PropertyType<Person, 'display'>, meta: Meta}}
 
@@ -43,17 +43,6 @@ export type Relatives = {
   childIds: Array<string>,
   persons: {[personId: string]: PersonWithMeta},
   person: PersonWithMeta,
-}
-
-export type FamiliesApiResponse = {
-  relationships: Array<{
-    type: string,
-    facts: Array<any>,
-    person1: {resourceId: string},
-    person2: {resourceId: string},
-  }>,
-  childAndParentsRelationships: Array<any>,
-  persons: Array<Person>,
 }
 
 export default (pid: string, {relationships = [], childAndParentsRelationships = [], persons: personsArray}: FamiliesApiResponse) => {
@@ -91,17 +80,17 @@ export default (pid: string, {relationships = [], childAndParentsRelationships =
   })
 
     // parents, parentIds, childIds, families[]
-  childAndParentsRelationships.forEach(({child, father, mother}) => {
+  childAndParentsRelationships.forEach(({child, parent1, parent2}) => {
     const childId = child && child.resourceId
-    const fatherId = father ? father.resourceId : 'missing'
-    const motherId = mother ? mother.resourceId : 'missing'
+    const fatherId = parent1 ? parent1.resourceId : 'missing'
+    const motherId = parent2 ? parent2.resourceId : 'missing'
     // I am the child
     if (childId === pid) {
       parents.push({father: persons[fatherId], mother: persons[motherId]})
-      if (father && parentIds.indexOf(fatherId) === -1) {
+      if (parent1 && parentIds.indexOf(fatherId) === -1) {
         parentIds.push(fatherId)
       }
-      if (mother && parentIds.indexOf(motherId) === -1) {
+      if (parent2 && parentIds.indexOf(motherId) === -1) {
         parentIds.push(motherId)
       }
       return
