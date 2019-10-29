@@ -24,7 +24,7 @@ export type FamiliesApiResponse = {
 
 export type FamilyView = {
   parent1: ResourceReference, // A reference to a parent in the family. The name "parent1" is used only to distinguish it from the other parent in this family and implies neither order nor role.
-  parent1: ResourceReference, // A reference to a parent in the family. The name "parent2" is used only to distinguish it from the other parent in this family and implies neither order nor role.
+  parent2: ResourceReference, // A reference to a parent in the family. The name "parent2" is used only to distinguish it from the other parent in this family and implies neither order nor role.
   children: Array<ResourceReference> // A list of references to the children of this family.
 };
 

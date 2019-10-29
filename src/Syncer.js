@@ -181,12 +181,12 @@ class Searcher extends EventEmitter {
 
     // parents
     if (numUp < this.config.maxUp && !numDown) {
-      relatives.parents.forEach(({ mother, father }) => {
-        if (mother) {
-          this.addRelative(mother, "mother", trail, numUp + 1, numDown);
+      relatives.parents.forEach(({ parent2, parent1 }) => {
+        if (parent2) {
+          this.addRelative(parent2, parentRel(parent2), trail, numUp + 1, numDown);
         }
-        if (father) {
-          this.addRelative(father, "father", trail, numUp + 1, numDown);
+        if (parent1) {
+          this.addRelative(parent1, parentRel(parent1), trail, numUp + 1, numDown);
         }
       });
     }
@@ -208,9 +208,9 @@ class Searcher extends EventEmitter {
         display: person.display,
         trail,
         relation: calcRelation(trail, numUp, numDown),
-        parents: relatives.parents.map(({ mother, father }) => ({
-          mother: mother && mother.id,
-          father: father && father.id
+        parents: relatives.parents.map(({ parent2, parent1 }) => ({
+          parent2: parent2 && parent2.id,
+          parent1: parent1 && parent1.id
         })),
         children: relatives.childIds
           .map(
@@ -230,6 +230,14 @@ class Searcher extends EventEmitter {
     if (this.total >= this.config.maxTotal) {
       this.stop(true);
     }
+  }
+}
+
+export const parentRel = (person: Person) => {
+  if (person.display.gender.toLowerCase() === 'female') {
+    return 'mother'
+  } else {
+    return 'father'
   }
 }
 

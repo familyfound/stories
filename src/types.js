@@ -30,8 +30,8 @@ export type EmitPerson = {
   trail: Array<TrailItem>,
   relation: string,
   parents: Array<{
-    mother: ?string,
-    father: ?string,
+    parent2: ?string,
+    parent1: ?string,
   }>,
   children: Array<{
     pid: string,

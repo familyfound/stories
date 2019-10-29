@@ -129,7 +129,7 @@ const showMissingFamilyMessage = person => {
   *   that the record actually matches your person.
   * - birth records of a child
   * - death records (often show marital status)
-  *   similarly, death records w/ {person} as father or mother rarely have
+  *   similarly, death records w/ {person} as parent1 or parent2 rarely have
   *   the information needed to be confident of a match
   * - military/draft records
   *   sometimes list marital status or "closest relative"
@@ -151,18 +151,18 @@ const SpousesAndChildren = ({ctx, queue, personWithRelationships: {person, famil
       <View key={family.spouse ? family.spouse.id : 'missing'} style={styles.family}>
         <PersonCard
           ctx={ctx}
-          title="mother"
+          title="parent2"
           marriage={family.marriage}
-          person={family.mother}
-          queueItemStatus={family.mother && makeQueueStatus(family.mother.id, queue, ctx.actions)}
+          person={family.parent2}
+          queueItemStatus={family.parent2 && makeQueueStatus(family.parent2.id, queue, ctx.actions)}
           mainPerson={person}
         />
         <PersonCard
           ctx={ctx}
-          title="father"
-          person={family.father}
+          title="parent1"
+          person={family.parent1}
           mainPerson={person}
-          queueItemStatus={family.father && makeQueueStatus(family.father.id, queue, ctx.actions)}
+          queueItemStatus={family.parent1 && makeQueueStatus(family.parent1.id, queue, ctx.actions)}
         />
         {showMarriageHints(person, family)}
         {renderMyChildren(family, person, queue, ctx)}
@@ -174,41 +174,41 @@ const SpousesAndChildren = ({ctx, queue, personWithRelationships: {person, famil
 const getBorn = meta => meta.estimatedBirth ? null : meta.born
 const getDied = meta => meta.estimatedDeath ? null : meta.died
 
-const missingChildrenMessage = (isOldEnough, marriedEarlyEnough, marriageYear, mother) => {
+const missingChildrenMessage = (isOldEnough, marriedEarlyEnough, marriageYear, parent2) => {
   if (!marriedEarlyEnough) {
     return <View style={styles.expectNoChildren}>
       No children recorded, but they were married fewer than 110 years ago, so any children might still be alive.
     </View>
   }
   if (!isOldEnough) {
-    if (!mother || mother.display.meta.estimatedBirth) {
+    if (!parent2 || parent2.display.meta.estimatedBirth) {
       return <View style={styles.expectNoChildren}>
-        No children recorded, but we don't know when {mother ? mother.display.name : 'the mother'} was born, so children might still be alive.
+        No children recorded, but we don't know when {parent2 ? parent2.display.name : 'the parent2'} was born, so children might still be alive.
       </View>
     }
     return <View style={styles.expectNoChildren}>
-      No children recorded, but {mother.display.name} was born fewer than 130 years ago, so any children might still be alive.
+      No children recorded, but {parent2.display.name} was born fewer than 130 years ago, so any children might still be alive.
     </View>
   }
-  if (mother && !mother.display.meta.estimatedDeath) {
+  if (parent2 && !parent2.display.meta.estimatedDeath) {
     if (marriageYear) {
-      if (mother.display.meta.died - marriageYear < 3) {
+      if (parent2.display.meta.died - marriageYear < 3) {
         return <View style={styles.expectNoChildren}>
-          {mother.display.name} died within 3 years of their marriage, so it's likely they really didn't have any children.
+          {parent2.display.name} died within 3 years of their marriage, so it's likely they really didn't have any children.
         </View>
       } else {
         return <ResearchHint>
-          Possible missing children: {mother.display.name} lived for {mother.display.meta.died - marriageYear} years after their marriage, so there might be children waiting to be found.
+          Possible missing children: {parent2.display.name} lived for {parent2.display.meta.died - marriageYear} years after their marriage, so there might be children waiting to be found.
         </ResearchHint>
       }
     } else {
-      if (mother.display.meta.age <= 22) {
+      if (parent2.display.meta.age <= 22) {
         return <ResearchHint>
-          Possible missing children: {mother.display.name} died at age {mother.display.meta.age}, so it's likely they really didn't have any children.
+          Possible missing children: {parent2.display.name} died at age {parent2.display.meta.age}, so it's likely they really didn't have any children.
         </ResearchHint>
       } else {
         return <ResearchHint>
-          Possible missing children: {mother.display.name} lived to be {mother.display.meta.age}, so it's likely that they really did have children, they just haven't been found yet.
+          Possible missing children: {parent2.display.name} lived to be {parent2.display.meta.age}, so it's likely that they really did have children, they just haven't been found yet.
         </ResearchHint>
       }
     }
@@ -219,14 +219,14 @@ const missingChildrenMessage = (isOldEnough, marriedEarlyEnough, marriageYear, m
   </ResearchHint>
 }
 
-const renderMyChildren = ({children, mother, father, marriage}, mainPerson, queue, ctx) => {
+const renderMyChildren = ({children, parent2, parent1, marriage}, mainPerson, queue, ctx) => {
   children = children.slice()
   children.sort((a, b) => a.display.meta.born - b.display.meta.born)
   const items = []
 
-  const motherBorn = mother && getBorn(mother.display.meta)
-  const motherDied = mother && getDied(mother.display.meta)
-  const fatherDied = father && getDied(father.display.meta)
+  const motherBorn = parent2 && getBorn(parent2.display.meta)
+  const motherDied = parent2 && getDied(parent2.display.meta)
+  const fatherDied = parent1 && getDied(parent1.display.meta)
   const firstYear = children.length ? getBorn(children[0].display.meta) : null
   const lastChildYear = children.length ? getBorn(children[children.length - 1].display.meta) : null
   const isOldEnough = motherBorn != null && motherBorn < (new Date().getFullYear() - 130)
@@ -282,14 +282,14 @@ const renderMyChildren = ({children, mother, father, marriage}, mainPerson, queu
     <View style={styles.children}>
       {possibleMissingBefore &&
         <ResearchHint>
-          Possible missing child - {mother.display.name} was {firstYear - motherBorn} when she had the first recorded child
+          Possible missing child - {parent2.display.name} was {firstYear - motherBorn} when she had the first recorded child
         </ResearchHint>}
       {items}
       {possibleMissingAfter &&
         <ResearchHint>
-          Possible missing child - {mother.display.name} was only {lastChildYear - motherBorn} when she had her last recorded child
+          Possible missing child - {parent2.display.name} was only {lastChildYear - motherBorn} when she had her last recorded child
         </ResearchHint>}
-      {!children.length && missingChildrenMessage(isOldEnough, marriedEarlyEnough, marriageYear, mother)}
+      {!children.length && missingChildrenMessage(isOldEnough, marriedEarlyEnough, marriageYear, parent2)}
     </View>
   )
 }
@@ -300,8 +300,8 @@ const ParentsAndSiblings = probably({
   shouldRefresh: (nextProps, prevProps) =>
     prevProps.pid !== nextProps.pid,
   promises: ({ctx, pid, personWithRelationships: {parents}}) => (
-    parents.reduce((promises, {mother, father}) => {
-      const id = mother ? mother.id : father.id
+    parents.reduce((promises, {parent2, parent1}) => {
+      const id = parent2 ? parent2.id : parent1.id
       promises['relationshipsFor' + id] = ctx.api.cache.personWithRelationships(id)
       return promises
     }, {})
@@ -316,28 +316,28 @@ const ParentsAndSiblings = probably({
             No parents recorded
           </ResearchHint>
         </View>}
-      {parents.map(({mother, father}) => {
-        const parentId = mother ? mother.id : father.id
+      {parents.map(({parent2, parent1}) => {
+        const parentId = parent2 ? parent2.id : parent1.id
         const parentPromise = parentRelationships['relationshipsFor' + parentId]
-        const spouseId = (mother && (father && father.id) || 'missing')
+        const spouseId = (parent2 && (parent1 && parent1.id) || 'missing')
         
         return <View style={styles.parentFamily} key={parentId}>
           <PersonCard
-            title="mother"
+            title="parent2"
             ctx={ctx}
-            person={mother}
+            person={parent2}
             mainPerson={person}
             marriage={parentPromise.families && parentPromise.families[spouseId].marriage}
-            queueItemStatus={mother && makeQueueStatus(mother.id, queue, ctx.actions)}
+            queueItemStatus={parent2 && makeQueueStatus(parent2.id, queue, ctx.actions)}
           />
           <PersonCard
-            title="father"
+            title="parent1"
             ctx={ctx}
-            person={father}
+            person={parent1}
             mainPerson={person}
-            queueItemStatus={father && makeQueueStatus(father.id, queue, ctx.actions)}
+            queueItemStatus={parent1 && makeQueueStatus(parent1.id, queue, ctx.actions)}
           />
-          {renderSiblings(parentPromise, (mother || father), spouseId, person, queue, ctx)}
+          {renderSiblings(parentPromise, (parent2 || parent1), spouseId, person, queue, ctx)}
         </View>
       })}
     </View>

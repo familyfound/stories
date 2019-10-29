@@ -100,9 +100,9 @@ export const parentsSearchQuery = ({person, parents}) => {
   // TODO search for a set of parents individually
   const attrs = simpleQueryAttrs(person)
   if (!parents.length) return queryToString(attrs)
-  const {mother, father} = parents[0]
-  if (mother) {
-    const motherName = getNameParts(mother)
+  const {parent2, parent1} = parents[0]
+  if (parent2) {
+    const motherName = getNameParts(parent2)
     if (motherName) {
       if (motherName.given) {
         attrs.mother_givenname = escapeString(motherName.given) + '~'
@@ -113,8 +113,8 @@ export const parentsSearchQuery = ({person, parents}) => {
     }
   }
 
-  if (father) {
-    const fatherName = getNameParts(father)
+  if (parent1) {
+    const fatherName = getNameParts(parent1)
     if (fatherName) {
       if (fatherName.given) {
         attrs.father_givenname = escapeString(fatherName.given) + '~'

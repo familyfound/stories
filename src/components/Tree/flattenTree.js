@@ -12,8 +12,8 @@ export default memOnce2((people, mainPerson) => {
       gen,
       num,
       person,
-      mother: person.parents.length && person.parents[0].mother,
-      father: person.parents.length && person.parents[0].father,
+      parent2: person.parents.length && person.parents[0].parent2,
+      parent1: person.parents.length && person.parents[0].parent1,
     })
     // TODO find siblings
   }
@@ -21,9 +21,9 @@ export default memOnce2((people, mainPerson) => {
   add(mainPerson, 0, 0)
   for (let i=0; i<peopleList.length; i++) {
     if (peopleList[i].gen < 8) {
-      const {mother, father, gen, num} = peopleList[i]
-      add(mother, gen + 1, num * 2 + 1)
-      add(father, gen + 1, num * 2)
+      const {parent2, parent1, gen, num} = peopleList[i]
+      add(parent2, gen + 1, num * 2 + 1)
+      add(parent1, gen + 1, num * 2)
     }
   }
 

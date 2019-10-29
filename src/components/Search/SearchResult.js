@@ -135,18 +135,20 @@ const SearchResult = ({hit: {person, score}, personData, personBorn, alreadyAtta
 
 export default SearchResult
 
-const RelationShips = ({person}) => (
-  <table>
-    <tbody>
-      {maybeRelationship('mother', person.motherName)}
-      {maybeRelationship('father', person.fatherName)}
-      {maybeRelationship('spouse', person.spouseName)}
-      {maybeRelationship('child', person.childName)}
-    </tbody>
-  </table>
-)
+// const parentName = 
 
-const maybeRelationship = (title, value) => value ? <tr><td>{title}</td><td>{value}</td></tr> : null
+// const RelationShips = ({person}) => (
+//   <table>
+//     <tbody>
+//       {maybeRelationship('parent2', person.motherName)}
+//       {maybeRelationship('parent1', person.fatherName)}
+//       {maybeRelationship('spouse', person.spouseName)}
+//       {maybeRelationship('child', person.childName)}
+//     </tbody>
+//   </table>
+// )
+
+// const maybeRelationship = (title, value) => value ? <tr><td>{title}</td><td>{value}</td></tr> : null
 
 const styles = {
 

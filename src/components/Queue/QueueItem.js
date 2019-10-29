@@ -72,8 +72,8 @@ const QueueItemMini = props => (
 
 const reasonTitle = {
   fewChildren: 'few children',
-  noMother: 'no mother',
-  noFather: 'no father',
+  noMother: 'no parent2',
+  noFather: 'no parent1',
   noChildren: 'no children',
   noSpouse: 'no spouse',
 }

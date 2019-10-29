@@ -25,25 +25,25 @@ import type {Person, FamiliesApiResponse} from './api-types'
 
 export type PersonWithMeta = {...Person, display: {...$PropertyType<Person, 'display'>, meta: Meta}}
 
-export type Family = {
+export type Family = {|
   spouse: ?PersonWithMeta,
-  mother?: ?PersonWithMeta,
-  father?: ?PersonWithMeta,
+  parent2?: ?PersonWithMeta,
+  parent1?: ?PersonWithMeta,
   children: Array<PersonWithMeta>,
   marriage?: {date: ?string, year: ?number, place: ?string}
-}
+|}
 
-export type Relatives = {
+export type Relatives = {|
   families: {[spouseId: string]: Family},
-  parents: Array<{
-    father: PersonWithMeta,
-    mother: PersonWithMeta,
-  }>,
+  parents: Array<{|
+    parent1: PersonWithMeta,
+    parent2: PersonWithMeta,
+  |}>,
   parentIds: Array<string>,
   childIds: Array<string>,
   persons: {[personId: string]: PersonWithMeta},
   person: PersonWithMeta,
-}
+|}
 
 export default (pid: string, {relationships = [], childAndParentsRelationships = [], persons: personsArray}: FamiliesApiResponse) => {
   const families: {[key: string]: Family} = {}
@@ -60,11 +60,11 @@ export default (pid: string, {relationships = [], childAndParentsRelationships =
     families[spouse] = {spouse: persons[spouse], children: []}
     const spouseIsFemale = person.display.gender.toLowerCase() !== 'female'
     if (spouseIsFemale) {
-      families[spouse].mother = persons[spouse]
-      families[spouse].father = person
+      families[spouse].parent2 = persons[spouse]
+      families[spouse].parent1 = person
     } else {
-      families[spouse].father = persons[spouse]
-      families[spouse].mother = person
+      families[spouse].parent1 = persons[spouse]
+      families[spouse].parent2 = person
     }
     if (facts) {
       facts.some(fact => {
@@ -82,16 +82,16 @@ export default (pid: string, {relationships = [], childAndParentsRelationships =
     // parents, parentIds, childIds, families[]
   childAndParentsRelationships.forEach(({child, parent1, parent2}) => {
     const childId = child && child.resourceId
-    const fatherId = parent1 ? parent1.resourceId : 'missing'
-    const motherId = parent2 ? parent2.resourceId : 'missing'
+    const parent1Id = parent1 ? parent1.resourceId : 'missing'
+    const parent2Id = parent2 ? parent2.resourceId : 'missing'
     // I am the child
     if (childId === pid) {
-      parents.push({father: persons[fatherId], mother: persons[motherId]})
-      if (parent1 && parentIds.indexOf(fatherId) === -1) {
-        parentIds.push(fatherId)
+      parents.push({parent1: persons[parent1Id], parent2: persons[parent2Id]})
+      if (parent1 && parentIds.indexOf(parent1Id) === -1) {
+        parentIds.push(parent1Id)
       }
-      if (parent2 && parentIds.indexOf(motherId) === -1) {
-        parentIds.push(motherId)
+      if (parent2 && parentIds.indexOf(parent2Id) === -1) {
+        parentIds.push(parent2Id)
       }
       return
     }
@@ -100,13 +100,13 @@ export default (pid: string, {relationships = [], childAndParentsRelationships =
       childIds.push(childId)
     }
 
-    const spouse = fatherId === pid ? motherId : fatherId
+    const spouse = parent1Id === pid ? parent2Id : parent1Id
     if (families[spouse]) {
       families[spouse].children.push(persons[childId])
     } else {
       families[spouse] = {
-        father: persons[fatherId],
-        mother: persons[motherId],
+        parent1: persons[parent1Id],
+        parent2: persons[parent2Id],
         spouse: persons[spouse],
         children: [persons[childId]],
       }

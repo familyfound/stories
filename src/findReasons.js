@@ -51,8 +51,8 @@ const checkers = {
 
   invalidFather: (person, {parents}) => false,
   invalidMother: (person, {perents}) => false,
-  noFather: (person, {parents}) => !parents.some(parents => !!parents.father),
-  noMother: (person, {parents}) => !parents.some(parents => !!parents.mother),
+  noFather: (person, {parents}) => !parents.some(parents => !!parents.parent1),
+  noMother: (person, {parents}) => !parents.some(parents => !!parents.parent2),
   noChildren: (_, $, meta) => meta.hasSpouse && meta.numChildren === 0,
   fewChildren: (_, $, meta) => meta.hasSpouse && meta.numChildren < 3 && meta.numChildren !== 0,
   noSpouse: (_, $, meta) => !meta.hasSpouse,
